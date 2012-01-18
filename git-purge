@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Like hg purge, this deletes all untracked files from your repository.
-
-git status -s | grep '^\?\?' | xargs rm

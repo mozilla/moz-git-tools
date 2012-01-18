@@ -19,7 +19,3 @@ Push commits from git to a new qqueue in an hg repository.
 ## git-patch-to-hg-patch
 
 Format a patch from `git format-patch` as an hg patch.
-
-## git-purge
-
-Like hg purge, delete all untracked files from your working directory.
