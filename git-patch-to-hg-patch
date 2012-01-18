@@ -1,0 +1,64 @@
+#!/usr/bin/python
+
+"""Git format-patch to hg importable patch.
+"""
+
+# Original author: bholley
+
+import sys
+import re
+import fileinput
+
+def process(lines):
+
+  # Discard the first line.
+  lines.pop(0);
+
+  # Read the second line, and extract the author.
+  author = re.sub(r'^From: (.*)$', r'# User \1', lines.pop(0))
+
+  # Discard the third line.
+  lines.pop(0)
+
+  # Read the subject line, filtering out the gunk and unwrapping.
+  subject = re.sub(r'^Subject: (.*)', r'\1', lines.pop(0))
+  nextline = lines.pop(0)
+  while nextline[0] == ' ':
+    subject = subject.rstrip('\n') + nextline
+    nextline = lines.pop(0)
+
+  # Filter a version (ie, v3, v12) out of the subject.
+  subject = re.sub(r'\s?v\d\d?', '', subject)
+
+  # Write the header.
+  lines.insert(0, subject)
+  lines.insert(0, '\n')
+  lines.insert(0, author)
+  lines.insert(0, '# HG changeset patch\n')
+
+if __name__ == "__main__":
+
+  # If there were no arguments, do stdin->stdout.
+  filelist = sys.argv[1:]
+  if not filelist:
+    lines = sys.stdin.readlines()
+    process(lines)
+    sys.stdout.writelines(lines)
+    sys.exit(0)
+
+  # Otherwise, we take a list of files.
+  for filename in filelist:
+
+    # Read the lines.
+    f = open(filename, 'r')
+    lines = f.readlines()
+    f.close()
+
+    # Process.
+    process(lines)
+
+    # Write them back to the same file.
+    f = open(filename, 'w')
+    f.writelines(lines)
+    f.close()
+

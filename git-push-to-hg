@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Push some commits from git to the git-temp qqueue in a given hg repository.
+# Note that this nukes the git-temp qqueue, if it exists.
+
 PATH=$PATH:$(dirname $0)
 set -e
 
@@ -17,21 +21,24 @@ git_parent_rev=$(git merge-base $rev master)
 hg_parent_rev=$(git-to-hg-commit $git_parent_rev $hg_repo)
 
 pushd "$hg_repo"
-hg pull
-hg up --rev "$hg_parent_rev"
-hg qpop -a
+  hg pull
+  hg up --rev "$hg_parent_rev"
+  hg qpop -a
 
-# Switch to the patches queue (which we assume exists) so we can delete
-# git-temp.
-hg qqueue patches
+  # Switch to the patches queue (which we assume exists) so we can delete
+  # git-temp.
+  hg qqueue patches
 
-hg qqueue --purge git-temp || true
-hg qqueue --create git-temp
+  hg qqueue --purge git-temp || true
+  hg qqueue --create git-temp
 popd
 
 git format-patch -pk $git_parent_rev -o "$hg_repo/.hg/patches-git-temp"
 
 pushd "$hg_repo"
-ls ".hg/patches-git-temp" | grep '\.patch$' > .hg/patches-git-temp/series
-hg qpush -a
+  pushd ".hg/patches-git-temp"
+    find . -name '*.patch' > series
+    git-patch-to-hg-patch $(cat series)
+  popd
+  hg qpush -a
 popd
