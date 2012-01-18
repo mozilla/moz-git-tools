@@ -1,0 +1,3 @@
+[submodule "git-bz-moz"]
+	path = git-bz-moz
+	url = git://github.com/bholley/git-bz-moz.git
