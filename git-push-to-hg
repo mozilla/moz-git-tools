@@ -1,0 +1,37 @@
+#!/bin/bash
+PATH=$PATH:$(dirname $0)
+set -e
+
+hg_repo="$1"
+if [[ "$1" == "" ]]; then
+  echo "Usage: $(basename $0) path-to-hg-repo [git-rev]" 1&>2
+  exit 255
+fi
+
+rev="$2"
+if [[ "$2" == "" ]]; then
+  rev="HEAD"
+fi
+
+git_parent_rev=$(git merge-base $rev master)
+hg_parent_rev=$(git-to-hg-commit $git_parent_rev $hg_repo)
+
+pushd "$hg_repo"
+hg pull
+hg up --rev "$hg_parent_rev"
+hg qpop -a
+
+# Switch to the patches queue (which we assume exists) so we can delete
+# git-temp.
+hg qqueue patches
+
+hg qqueue --purge git-temp || true
+hg qqueue --create git-temp
+popd
+
+git format-patch -pk $git_parent_rev -o "$hg_repo/.hg/patches-git-temp"
+
+pushd "$hg_repo"
+ls ".hg/patches-git-temp" | grep '\.patch$' > .hg/patches-git-temp/series
+hg qpush -a
+popd

@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+git_commit_id=$1
+hg_repo=$2
+git_repo=$3
+
+if [[ "$git_commit_id" == "" || "$hg_repo" == "" ]]; then
+  echo "Usage: $(basename $0) git-commit-id path-to-hg-repo [path-to-git-repo]"
+  exit 255
+fi
+
+if [[ "$git_repo" == "" ]]; then
+  git_repo='.'
+fi
+
+function git_log()
+{
+  # $1: The format to pass to git log.
+  git --git-dir="$git_repo/.git" log -n1 "$git_commit_id" --pretty="format:$1"
+}
+
+commit_user=$(git_log '%an <%ae>')
+commit_date=$(git_log '%aD')
+search_str=$(git_log ' %s')
+
+# Locate the hg {desc}|{node} pair containing the commit message from search_str.
+hg_str=$(hg log -R "$hg_repo" --user "$commit_user" --date "$commit_date" --template '{node} {desc|firstline}\n' | grep -F "$search_str") || true
+
+if [[ "$hg_str" == "" ]]; then
+  echo "No matching commit found." 1>&2
+  exit 1
+elif [[ "$(echo "$hg_str" | wc -l)" > 1 ]]; then
+  echo "Uh oh; multiple matching commits!" 1>&2
+  echo "$hg_str" 1>&2
+  exit 2
+fi
+
+# Cool; we found it!
+hg_node=$(echo "$hg_str" | cut -f 1 -d ' ')
+echo "$hg_node"
