@@ -37,7 +37,7 @@ git format-patch -pk $git_parent_rev -o "$hg_repo/.hg/patches-git-temp"
 
 pushd "$hg_repo"
   pushd ".hg/patches-git-temp"
-    find . -name '*.patch' > series
+    find . -name '*.patch' | sort -g > series
     git-patch-to-hg-patch $(cat series)
   popd
   hg qpush -a
