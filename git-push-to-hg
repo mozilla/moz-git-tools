@@ -17,11 +17,12 @@ if [[ "$2" == "" ]]; then
   rev="HEAD"
 fi
 
+hg -R "$hg_repo" pull
+
 git_parent_rev=$(git merge-base $rev master)
 hg_parent_rev=$(git-to-hg-commit $git_parent_rev $hg_repo)
 
 pushd "$hg_repo"
-  hg pull
   hg up --rev "$hg_parent_rev"
   hg qpop -a
 
