@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Push some commits from git to the git-temp qqueue in a given hg repository.
 # Note that this nukes the git-temp qqueue, if it exists.
@@ -17,29 +18,49 @@ if [[ "$2" == "" ]]; then
   rev="HEAD"
 fi
 
-hg -R "$hg_repo" pull
+git-qapplied
+
+git_status=$(git status --porcelain)
+if [[ "$git_status" != "" ]]; then
+  echo ""
+  echo "Warning; tree is not clean!"
+  echo "$git_status"
+  read -sn1 -p "Press any key to continue, or <ctrl-c> to quit. "
+  echo ""
+fi
+
+function hg_cmd() {
+  #echo "hg "$@"" >&2
+  hg -R "$hg_repo" -q $@ > /dev/null
+}
 
 git_parent_rev=$(git merge-base $rev master)
-hg_parent_rev=$(git-to-hg-commit $git_parent_rev $hg_repo)
 
-pushd "$hg_repo"
-  hg up --rev "$hg_parent_rev"
-  hg qpop -a
+# Run git-to-hg-commit, and only run hg pull if it fails.
+hg_parent_rev=$(git-to-hg-commit $git_parent_rev "$hg_repo" 2> /dev/null || \
+                (hg_cmd pull &&                                             \
+                 git-to-hg-commit $git_parent_rev "$hg_repo"))
 
-  # Switch to the patches queue (which we assume exists) so we can delete
-  # git-temp.
-  hg qqueue patches
+hg_cmd up --rev "$hg_parent_rev"
 
-  hg qqueue --purge git-temp || true
-  hg qqueue --create git-temp
-popd
+# Run qpop -a only if there are patches applied, so we don't see "no patches
+# applied".  (We could qpop -a and ignore stderr, but then we could ignore a
+# real error!)
+if [[ $(hg -R "$hg_repo" qapplied) != "" ]]; then
+  hg_cmd qpop -a
+fi
 
-git format-patch -pk $git_parent_rev -o "$hg_repo/.hg/patches-git-temp"
+# Switch to the patches queue (which we assume exists) so we can delete
+# git-temp.
+hg_cmd qqueue patches
+hg_cmd qqueue -q --purge git-temp || true
+hg_cmd qqueue -q --create git-temp
 
-pushd "$hg_repo"
-  pushd ".hg/patches-git-temp"
-    find . -name '*.patch' | sort -g > series
-    git-patch-to-hg-patch $(cat series)
-  popd
-  hg qpush -a
-popd
+git format-patch --quiet -pk $git_parent_rev -o ""$hg_repo"/.hg/patches-git-temp"
+
+pushd ""$hg_repo"/.hg/patches-git-temp" > /dev/null
+  find . -name '*.patch' | sort -g > series
+  git-patch-to-hg-patch $(cat series)
+popd > /dev/null
+
+hg_cmd qpush -a
