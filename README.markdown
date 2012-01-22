@@ -16,6 +16,10 @@ Find the hg commit corresponding to a git commit.
 
 Push commits from git to a new qqueue in an hg repository.
 
+## git-qapplied
+
+Like `hg qapplied`, output the commits in this branch which are not in the master branch.
+
 ## git-patch-to-hg-patch
 
 Format a patch from `git format-patch` as an hg patch.
