@@ -30,7 +30,7 @@ hg_str=$(hg log -R "$hg_repo" --user "$commit_user" --date "$commit_date" --temp
 if [[ "$hg_str" == "" ]]; then
   echo "No matching commit found." 1>&2
   exit 1
-elif [[ "$(echo "$hg_str" | wc -l)" > 1 ]]; then
+elif (( "$(echo "$hg_str" | wc -l)" > 1 )); then
   echo "Uh oh; multiple matching commits!" 1>&2
   echo "$hg_str" 1>&2
   exit 2
