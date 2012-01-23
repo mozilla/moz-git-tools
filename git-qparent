@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Like |hg qparent|, gives last common revision between HEAD and master.
+
+git merge-base HEAD master
