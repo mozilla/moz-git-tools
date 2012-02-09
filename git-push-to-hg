@@ -9,7 +9,7 @@ set -e
 
 hg_repo="$1"
 if [[ "$1" == "" ]]; then
-  echo "Usage: $(basename $0) path-to-hg-repo [git-rev]" 1&>2
+  echo "Usage: $(basename $0) path-to-hg-repo [git-rev]" 1>& 2
   exit 255
 fi
 
@@ -37,9 +37,9 @@ function hg_cmd() {
 git_parent_rev=$(git merge-base $rev master)
 
 # Run git-to-hg-commit, and only run hg pull if it fails.
-hg_parent_rev=$(git-to-hg-commit $git_parent_rev "$hg_repo" 2> /dev/null || \
+hg_parent_rev=$(git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null || \
                 (hg_cmd pull &&                                             \
-                 git-to-hg-commit $git_parent_rev "$hg_repo"))
+                 git-to-hg-commit "$hg_repo" $git_parent_rev) )
 
 hg_cmd up --rev "$hg_parent_rev"
 

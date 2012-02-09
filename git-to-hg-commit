@@ -1,17 +1,21 @@
 #!/bin/bash
 set -e
 
-git_commit_id=$1
-hg_repo=$2
+hg_repo=$1
+git_commit_id=$2
 git_repo=$3
 
-if [[ "$git_commit_id" == "" || "$hg_repo" == "" ]]; then
-  echo "Usage: $(basename $0) git-commit-id path-to-hg-repo [path-to-git-repo]"
-  exit 255
+if [[ "$git_commit_id" == "" ]]; then
+  git_commit_id="HEAD"
 fi
 
 if [[ "$git_repo" == "" ]]; then
   git_repo='.'
+fi
+
+if [[ "$git_commit_id" == "" || "$hg_repo" == "" ]]; then
+  echo "Usage: $(basename $0) path-to-hg-repo [git-commit-id] [path-to-git-repo]" 1>&2
+  exit 255
 fi
 
 function git_log()
@@ -20,7 +24,8 @@ function git_log()
   git --git-dir="$git_repo/.git" log -n1 "$git_commit_id" --pretty="format:$1"
 }
 
-commit_user=$(git_log '%an <%ae>')
+# If git doesn't have an e-mail address, it substitutes "<none@none>", which will mess us up.
+commit_user=$(git_log '%an <%ae>' | sed -e 's/ <none@none>//')
 commit_date=$(git_log '%aD')
 search_str=$(git_log ' %s')
 
