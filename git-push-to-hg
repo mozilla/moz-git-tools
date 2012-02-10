@@ -7,6 +7,23 @@ set -e
 PATH=$PATH:$(dirname $0)
 set -e
 
+# Read git version and note if it's less than 1.7.6, because older versions do
+# not support git-format-patch --quiet properly.
+
+function git_version() {
+  # Get the $1'th part of the git version.
+  git version | cut -f 3 -d ' ' | cut -f $1 -d '.'
+}
+
+# "Old git" means less than 1.7.5.  Earlier versions do not work well with git
+# diff --quiet.  See https://github.com/jlebar/moz-git-tools/issues/1.
+if (( ($(git_version 1) == 1 && $(git_version 2) == 7 && $(git_version 3) < 5) ||
+      ($(git_version 1) == 1 && $(git_version 2) < 7) )); then
+  old_git=1
+else
+  old_git=0
+fi
+
 hg_repo="$1"
 if [[ "$1" == "" ]]; then
   echo "Usage: $(basename $0) path-to-hg-repo [git-rev]" 1>& 2
@@ -56,7 +73,12 @@ hg_cmd qqueue patches
 hg_cmd qqueue -q --purge git-temp || true
 hg_cmd qqueue -q --create git-temp
 
-git format-patch --quiet -pk $git_parent_rev -o ""$hg_repo"/.hg/patches-git-temp"
+# Pass --quiet only for not-old-git.
+if [[ "$old_git" == 0 ]]; then
+  git_format_quiet='--quiet'
+fi
+
+git format-patch $git_format_quiet -pk $git_parent_rev -o ""$hg_repo"/.hg/patches-git-temp"
 
 pushd ""$hg_repo"/.hg/patches-git-temp" > /dev/null
   find . -name '*.patch' | sort -g > series
