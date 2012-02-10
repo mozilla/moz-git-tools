@@ -26,6 +26,11 @@ Outputs the last common revision of the current branch and master.  (This comman
 
 You might use `git-qparent` when running `git rebase -i`.  `git rebase -i master` will move your commits onto the tip of master, whereas `git rebase -i $(git qparent)` will allow you to edit your commits without moving them.
 
+## git-edit-files
+
+Open all the files modified in the specified rev range in your `$EDITOR`.  (If
+no rev range is specified, open the files modified in your current branch.)
+
 ## git-qapplied
 
 Like `hg qapplied`, output the commits in this branch which are not in the master branch.

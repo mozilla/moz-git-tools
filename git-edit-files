@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [[ "$1" == "--help" ]]; then
+  echo "Usage: $0 [GIT_REV]
+Invoke \$EDITOR on the files modified in the given revision.
+If no revision is given, invoke \$EDITOR on the files modified in the current branch."
+  exit 1
+fi
+
+if [[ "$1" == "" ]]; then
+  revs="$(git merge-base master HEAD)..HEAD"
+else
+  if ! echo "$1" | grep -q '\.\.'; then
+    revs="$1^..$1"
+  else
+    revs="$1"
+  fi
+fi
+
+files=$(git diff --name-only $revs)
+if [[ "$files" == "" ]]; then
+  echo "No files modified in range $revs."
+  exit 2
+fi
+
+$EDITOR $files
