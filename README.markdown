@@ -14,7 +14,11 @@ Find the hg commit corresponding to a git commit.
 
 ## git-push-to-hg
 
-Push commits from git to a new qqueue in an hg repository.
+Usage: `git push-to-hg PATH_TO_HG_REPO [GIT_REVS]`
+
+Push commits from git to a new qqueue in an hg repository.  If GIT\_REVS is
+omitted, push the commits `$(git merge-base HEAD master)..HEAD` (i.e.
+everything in the current branch that's not in master).
 
 ## git-qparent
 
