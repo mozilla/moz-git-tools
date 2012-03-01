@@ -4,4 +4,4 @@
 # current branch which are not in the master branch.
 
 echo "On branch $(git branch | grep '^\*' | cut -f 2 -d ' ')."
-git log --date-order --pretty=oneline --abbrev-commit $(git merge-base HEAD master)..HEAD
+git log --reverse --date-order --pretty=oneline --abbrev-commit $(git merge-base HEAD master)..HEAD
