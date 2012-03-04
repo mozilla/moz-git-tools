@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Get the name of the active git branch.  If the cwd is not a git repository,
+# output nothing.
+#
+# This is useful if you want to display the current branch in your shell
+# prompt.
+
+git branch 2>/dev/null | grep '^\*' | sed 's/^\* //'

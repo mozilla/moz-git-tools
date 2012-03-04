@@ -38,3 +38,26 @@ Like `hg qapplied`, output the commits in this branch which are not in the maste
 ## git-patch-to-hg-patch
 
 Format a patch from `git format-patch` as an hg patch.
+
+## git-branchname
+
+Output the name of the active git branch, but if there's no git repository
+below the cwd, output nothing.  This is useful when you want to display the
+current branch name on the command line.
+
+For example, I have in my ~/.bashrc:
+
+    function vcs-branchname() {
+      git_branch=`git branchname`
+      if [[ "$git_branch" != "" ]]; then
+        echo " ($git_branch)"
+      fi
+    }
+
+    PROMPT_COLOR="35m"
+    PROMPT_COMMAND='BRANCH_NAME=`vcs-branchname`'
+    PS1='\[\033[01;$PROMPT_COLOR\]\u@\h\[\033[00m\]:\[\033[01;$PROMPT_COLOR\]\w\[\033[00m\]$BRANCH_NAME\$ '
+
+which makes my prompt look like
+
+    jlebar@hostname:~/current/path (name-of-git-branch)$
