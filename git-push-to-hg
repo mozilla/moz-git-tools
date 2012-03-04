@@ -27,9 +27,15 @@ else
   old_git=0
 fi
 
+push_to_tip=0
+if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+  push_to_tip=1
+  shift
+fi
+
 hg_repo="$1"
 if [[ "$1" == "" ]]; then
-  echo "Usage: $(basename $0) path-to-hg-repo [git-revs]" 1>& 2
+  echo "Usage: $(basename $0) [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
   exit 255
 fi
 
@@ -65,9 +71,13 @@ first_rev=$(echo "$revs" | sed -e 's/\.\..*//')
 git_parent_rev=$(git merge-base $first_rev master)
 
 # Run git-to-hg-commit, and only run hg pull if it fails.
-hg_parent_rev=$(git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null || \
-                (hg_cmd pull &&                                             \
-                 git-to-hg-commit "$hg_repo" $git_parent_rev) )
+if [[ "$push_to_tip" == "0" ]]; then
+  hg_parent_rev=$(git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null || \
+                  (hg_cmd pull &&                                             \
+                   git-to-hg-commit "$hg_repo" $git_parent_rev) )
+else
+  hg_parent_rev="tip"
+fi
 
 hg_cmd up --rev "$hg_parent_rev"
 
