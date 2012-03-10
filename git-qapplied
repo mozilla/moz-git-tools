@@ -3,5 +3,7 @@
 # As an analog to |hg qapplied|, |git qapplied| lists the commits in the
 # current branch which are not in the master branch.
 
-echo "On branch $(git branch | grep '^\*' | cut -f 2 -d ' ')."
+set -e
+
+echo "On branch $(git branch | grep '^\*' | sed 's/^\* //')."
 git log --reverse --date-order --pretty=oneline --abbrev-commit $(git merge-base HEAD master)..HEAD
