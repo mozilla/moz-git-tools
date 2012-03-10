@@ -51,7 +51,7 @@ if ! echo "$revs" | fgrep ".."; then
 fi
 
 echo "On branch $(git branch | grep '^\*' | cut -f 2 -d ' ')."
-git log --date-order --pretty=oneline --abbrev-commit $revs
+git log --reverse --date-order --pretty=oneline --abbrev-commit $revs
 
 git_status=$(git status --porcelain)
 if [[ "$git_status" != "" ]]; then
