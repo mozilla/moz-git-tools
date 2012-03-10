@@ -7,8 +7,7 @@ set -e
 # If no commit range is specified, we push $(git merge-base master HEAD)..HEAD.
 # Otherwise, we push the commit(s) given.
 
-PATH=$PATH:$(dirname $0)
-set -e
+PATH="$(dirname $0):$PATH"
 
 # Read git version and note if it's less than 1.7.6, because older versions do
 # not support git-format-patch --quiet properly.
