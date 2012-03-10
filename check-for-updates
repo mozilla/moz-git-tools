@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Output a warning if we're not at the newest upstream version, and kick off a
+# background fetch.  It'll take two calls to check-for-updates before we notice
+# that we're out of date, but that's OK.
+
+cd $(dirname $0)
+
+if [[ $(git log HEAD..origin/master) != "" ]]; then
+  echo "You are not using the latest revision of moz-git-tools.  Consider updating your tree." 1>&2
+fi
+git fetch --quiet origin &

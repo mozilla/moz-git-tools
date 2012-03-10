@@ -9,6 +9,8 @@ set -e
 
 PATH="$(dirname $0):$PATH"
 
+$(dirname $0)/check-for-updates
+
 # Read git version and note if it's less than 1.7.6, because older versions do
 # not support git-format-patch --quiet properly.
 
