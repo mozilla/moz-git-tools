@@ -3,14 +3,9 @@ set -e
 
 hg_repo=$1
 git_commit_id=$2
-git_repo=$3
 
 if [[ "$git_commit_id" == "" ]]; then
   git_commit_id="HEAD"
-fi
-
-if [[ "$git_repo" == "" ]]; then
-  git_repo='.'
 fi
 
 if [[ "$git_commit_id" == "" || "$hg_repo" == "" ]]; then
@@ -21,7 +16,7 @@ fi
 function git_log()
 {
   # $1: The format to pass to git log.
-  git --git-dir="$git_repo/.git" log -n1 "$git_commit_id" --pretty="format:$1"
+  git log -n1 "$git_commit_id" --pretty="format:$1"
 }
 
 # If git doesn't have an e-mail address, it substitutes "<none@none>", which will mess us up.
