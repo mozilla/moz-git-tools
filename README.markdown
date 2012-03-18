@@ -24,6 +24,15 @@ If `-t` or `--tip` is specified, update the hg repository to its tip before
 pushing.  Otherwise, update the hg repository to the revision atop which the
 git commits are based.
 
+## git-push-to-try
+
+Usage: `git push-to-try [-t/--tip] PATH_TO_HG_REPO TRYCHOOSER_PARAMS`
+
+Push the commits `$(git merge-base HEAD master)..HEAD` (i.e. everything in the
+current branch that's not in master) to try, by way of the given hg repository.
+
+TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
+
 ## git-qparent
 
 Outputs the last common revision of the current branch and master.  (This command is a synonym for `git merge-base HEAD master`.)

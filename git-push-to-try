@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+PATH=$(dirname $0):$PATH
+
+function hg_cmd() {
+  #echo "hg "$@"" >&2
+  hg -R "$hg_repo" -q $@ > /dev/null
+}
+
+# Sigh, command-line parsing in bash is so much fun.
+
+if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+  tip_cmd="--tip"
+  shift
+fi
+
+hg_repo=$1
+shift
+
+git-push-to-hg $tip_cmd "$hg_repo"
+
+commit_msg=$(hg log -R "$hg_repo" -l1 --template '{desc}')
+hg_cmd qref -sl <(echo "try: $@ $commit_msg")
+echo "try: $@"
+
+hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
+
+hg_cmd qpop -a
