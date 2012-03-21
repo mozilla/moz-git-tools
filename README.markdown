@@ -1,5 +1,9 @@
 # Tools for working with Git at Mozilla.
 
+In order to set this up, clone this repository somewhere,
+run the `git submodule update` command, and add your clone
+to $PATH.
+
 ## git-bz
 
 Push patches from git to bugzilla.
