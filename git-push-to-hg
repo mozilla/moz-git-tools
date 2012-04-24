@@ -73,9 +73,11 @@ git_parent_rev=$(git merge-base $first_rev master)
 
 # Run git-to-hg-commit, and only run hg pull if it fails.
 if [[ "$push_to_tip" == "0" ]]; then
-  hg_parent_rev=$(git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null || \
-                  (hg_cmd pull &&                                             \
-                   git-to-hg-commit "$hg_repo" $git_parent_rev) )
+  hg_parent_rev=$(git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null ||            \
+                  (hg_cmd pull &&                                                        \
+                   git-to-hg-commit "$hg_repo" $git_parent_rev 2> /dev/null ||           \
+                   (echo "No matching commit found.  (Try pushing with --tip.)" 1>& 2 && \
+                    exit 2)))
 else
   hg_parent_rev="tip"
 fi
