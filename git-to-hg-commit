@@ -22,7 +22,7 @@ function git_log()
 # If git doesn't have an e-mail address, it substitutes "<none@none>", which will mess us up.
 commit_user=$(git_log '%an <%ae>' | sed -e 's/ <none@none>//')
 commit_date=$(git_log '%aD')
-search_str=$(git_log ' %s')
+search_str=$(git_log ' %B' | head -n1)
 
 # Locate the hg {desc}|{node} pair containing the commit message from search_str.
 hg_str=$(hg log -R "$hg_repo" --user "$commit_user" --date "$commit_date" --template '{node} {desc|firstline}\n' | grep -F "$search_str") || true
