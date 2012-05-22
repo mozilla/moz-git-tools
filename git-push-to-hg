@@ -4,7 +4,10 @@ set -e
 # Push some commits from git to the git-temp qqueue in a given hg repository.
 # Note that this nukes the git-temp qqueue, if it exists.
 #
-# If no commit range is specified, we push $(git merge-base master HEAD)..HEAD.
+# If no commit range is specified, we push
+#
+#   $(git merge-base origin/master HEAD)..HEAD.
+#
 # Otherwise, we push the commit(s) given.
 
 PATH="$(dirname $0):$PATH"
@@ -42,7 +45,7 @@ fi
 
 revs="$2"
 if [[ "$revs" == "" ]]; then
-  revs="$(git merge-base HEAD master)..HEAD"
+  revs="$(git merge-base HEAD origin/master)..HEAD"
 fi
 
 # If revs doesn't contain "..", add "$revs^.." to the beginning.
@@ -69,7 +72,7 @@ function hg_cmd() {
 }
 
 first_rev=$(echo "$revs" | sed -e 's/\.\..*//')
-git_parent_rev=$(git merge-base $first_rev master)
+git_parent_rev=$(git merge-base $first_rev origin/master)
 
 # Run git-to-hg-commit, and only run hg pull if it fails.
 if [[ "$push_to_tip" == "0" ]]; then
