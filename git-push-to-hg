@@ -102,7 +102,7 @@ if [[ "$old_git" == 0 ]]; then
   git_format_quiet='--quiet'
 fi
 
-git format-patch $git_format_quiet -pk $revs -o ""$hg_repo"/.hg/patches-git-temp"
+git format-patch $git_format_quiet -M -C -pk $revs -o ""$hg_repo"/.hg/patches-git-temp"
 
 pushd ""$hg_repo"/.hg/patches-git-temp" > /dev/null
   find . -name '*.patch' | sort -g > series
