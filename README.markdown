@@ -40,8 +40,8 @@ TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
 ## git-qparent
 
-Outputs the last common revision of the current branch and master.  (This
-command is a synonym for `git merge-base HEAD origin/master`.)
+Outputs the last common revision of the current branch and origin/master.
+(This command is a synonym for `git merge-base HEAD origin/master`.)
 
 ## git-qrebase
 
@@ -55,7 +55,8 @@ no rev range is specified, open the files modified in your current branch.)
 
 ## git-qapplied
 
-Like `hg qapplied`, output the commits in this branch which are not in the master branch.
+Like `hg qapplied`, output the commits in this branch which are not in the
+origin/master branch.
 
 ## git-patch-to-hg-patch
 
