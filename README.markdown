@@ -40,9 +40,13 @@ TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
 ## git-qparent
 
-Outputs the last common revision of the current branch and master.  (This command is a synonym for `git merge-base HEAD origin/master`.)
+Outputs the last common revision of the current branch and master.  (This
+command is a synonym for `git merge-base HEAD origin/master`.)
 
-You might use `git-qparent` when running `git rebase -i`.  `git rebase -i master` will move your commits onto the tip of master, whereas `git rebase -i $(git qparent)` will allow you to edit your commits without moving them.
+## git-qrebase
+
+An alias for `git rebase -i $(git qparent)`.  This lets you interactively
+rebase your current branch without moving the commits to a new upstream base.
 
 ## git-edit-files
 
