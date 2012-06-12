@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# Check that we're not adding any .orig files, and check for trailing
+# whitespace.
+#
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+  against=HEAD
+else
+  # Initial commit: diff against an empty tree object
+  against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# Check for .orig files added in this commit.
+orig_files=$(git diff --cached --name-only --diff-filter=A $against | grep '\.orig$')
+if [[ "$orig_files" != "" ]]; then
+  num_orig_files=$(echo "$orig_files" | wc -l)
+  if [[ "$num_orig_files" == "1" ]]; then
+    echo "Error: Attempting to commit .orig file $orig_files."
+  else
+    echo "Error: Attempting to commit $num_orig_files .orig files:"
+    echo
+    echo "$(echo "$orig_files" | sed -e 's/^/  /')"
+  fi
+  echo
+  echo "If you really want to proceed, commit with --no-verify."
+  exit 1
+fi
+
+# Check for trailing whitespace
+if ! git diff-index --check --cached $against --; then
+  echo
+  echo "Error: Trailing whitespace in commit."
+  echo
+  echo "Try git rebase --whitespace=fix, or, if you really want to proceed,"
+  echo "commit with --no-verify."
+  exit 2
+fi

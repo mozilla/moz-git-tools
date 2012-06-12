@@ -83,3 +83,9 @@ For example, I have in my ~/.bashrc:
 which makes my prompt look like
 
     jlebar@hostname:~/current/path (name-of-git-branch)$
+
+## pre-commit
+
+A pre-commit hook which checks for .orig files and trailing whitespace.
+
+To install this hook, symlink it into your repository's `.git/hooks` directory (with the name pre-commit).
