@@ -8,6 +8,7 @@
 import sys
 import re
 import fileinput
+from email.header import Header, decode_header
 
 def process(lines):
 
@@ -27,10 +28,20 @@ def process(lines):
     subject = subject.rstrip('\n') + nextline
     nextline = lines.pop(0)
 
+  # Decode the header into a UTF-8 string, in case it uses MIME encoded words
+  encoded_subject = Header(subject)
+  subject = ''
+  for (part, encoding) in decode_header(encoded_subject):
+    if encoding is None:
+      subject += part
+    else:
+      subject += part.decode(encoding).encode('utf-8')
+
   # Filter a version (ie, v3, v12) out of the subject.
   subject = re.sub(r'\s?v\d\d?', '', subject)
 
   # Write the header.
+  lines.insert(0, '\n')
   lines.insert(0, subject)
   lines.insert(0, '\n')
   lines.insert(0, author)
