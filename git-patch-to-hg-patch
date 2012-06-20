@@ -25,14 +25,19 @@ from cStringIO import StringIO
 from itertools import takewhile
 
 def decode_header(hdr_string):
-  rv = ''
+  r"""Clean up weird encoding crap.
+
+  >>> clean_header('[PATCH] =?UTF-8?q?Bug=20655877=20r=3D=3F?=')
+  '[PATCH] Bug 655877 r=?'
+  """
+  rv = []
   hdr = email.header.Header(hdr_string, maxlinelen=float('inf'))
   for (part, encoding) in email.header.decode_header(hdr):
     if encoding is None:
-      rv += part
+      rv.append(part)
     else:
-      rv += part.decode(encoding).encode('utf-8')
-  return rv
+      rv.append(part.decode(encoding).encode('utf-8'))
+  return ' '.join(rv)
 
 def clean_header(hdr_string):
   r"""Transform a header split over many lines into a header split only where
