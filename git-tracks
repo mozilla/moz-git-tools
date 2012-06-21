@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# Based on http://serverfault.com/a/352236/38694
+
+branch=$(git symbolic-ref HEAD) || exit $?
+branch=${branch##refs/heads/}
+remote=$(git config "branch.${branch}.remote") || exit $?
+remoteBranch=$(git config "branch.${branch}.merge") || exit $?
+remoteBranch=${remoteBranch##refs/heads/}
+
+if [[ "$remote" != "." ]]; then
+  echo "${remote:?}/${remoteBranch:?}"
+else
+  echo "${remoteBranch:?}"
+fi
