@@ -8,7 +8,7 @@ If no revision is given, invoke \$EDITOR on the files modified in the current br
 fi
 
 if [[ "$1" == "" ]]; then
-  revs="$(git merge-base origin/master HEAD)..HEAD"
+  revs="$(git merge-base $(git-tracks) HEAD)..HEAD"
 else
   if ! echo "$1" | grep -q '\.\.'; then
     revs="$1^..$1"

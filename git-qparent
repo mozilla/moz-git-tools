@@ -2,4 +2,5 @@
 
 # Like |hg qparent|, gives last common revision between HEAD and upstream.
 
-git merge-base HEAD origin/master
+PATH="$(dirname $0):$PATH"
+git merge-base HEAD $(git tracks)

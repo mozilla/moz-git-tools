@@ -12,6 +12,16 @@ Push patches from git to bugzilla.
 
 Create a new working directory based off an existing local git repository.
 
+## git-tracks
+
+Gets the name of the current branch's upstream branch.
+
+You can set this with `git branch --set-upstream CURRENT_BRANCH
+UPSTREAM_BRANCH`.  (Note that you must sepecify the current branch in this
+call!)
+
+Many other tools here rely on your branch having the correct upstream branch.
+
 ## git-to-hg-commit
 
 Find the hg commit corresponding to a git commit.
@@ -21,7 +31,7 @@ Find the hg commit corresponding to a git commit.
 Usage: `git push-to-hg [-t/--tip] PATH_TO_HG_REPO [GIT_REVS]`
 
 Push commits from git to a new qqueue in an hg repository.  If GIT\_REVS is
-omitted, push the commits `$(git merge-base HEAD origin/master)..HEAD` (i.e.
+omitted, push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e.
 everything in the current branch that's not upstream).
 
 If `-t` or `--tip` is specified, update the hg repository to its tip before
@@ -32,7 +42,7 @@ git commits are based.
 
 Usage: `git push-to-try [-t/--tip] PATH_TO_HG_REPO TRYCHOOSER_PARAMS`
 
-Push the commits `$(git merge-base HEAD origin/master)..HEAD` (i.e. everything
+Push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e. everything
 in the current branch that's not upstream) to try, by way of the given hg
 repository.
 
@@ -40,8 +50,8 @@ TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
 ## git-qparent
 
-Outputs the last common revision of the current branch and origin/master.
-(This command is a synonym for `git merge-base HEAD origin/master`.)
+Outputs the last common revision of the current branch and upstream.
+(This command is a synonym for `git merge-base HEAD $(git-tracks)`.)
 
 ## git-qrebase
 
@@ -55,8 +65,7 @@ no rev range is specified, open the files modified in your current branch.)
 
 ## git-qapplied
 
-Like `hg qapplied`, output the commits in this branch which are not in the
-origin/master branch.
+Like `hg qapplied`, output the commits in this branch which are not upstream.
 
 ## git-patch-to-hg-patch
 

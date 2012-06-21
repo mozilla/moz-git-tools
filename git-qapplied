@@ -5,5 +5,6 @@
 
 set -e
 
+PATH="$(dirname $0):$PATH"
 echo "On branch $(git branch | grep '^\*' | sed 's/^\* //')."
-git log --reverse --date-order --pretty=oneline --abbrev-commit $(git merge-base HEAD origin/master)..HEAD
+git log --reverse --date-order --pretty=oneline --abbrev-commit $(git qparent)..HEAD
