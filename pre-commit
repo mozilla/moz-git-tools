@@ -33,7 +33,12 @@ if ! git diff-index --check --cached $against --; then
   echo
   echo "Error: Trailing whitespace in commit."
   echo
-  echo "Try git rebase --whitespace=fix, or, if you really want to proceed,"
-  echo "commit with --no-verify."
+  echo "You can automagically fix trailing whitespace with: "
+  echo
+  echo "  git commit -a --no-verify -m TEMP"
+  echo "  git rebase --whitespace=fix HEAD^"
+  echo "  git reset HEAD^"
+  echo
+  echo "If you really want to proceed, commit with --no-verify."
   exit 2
 fi
