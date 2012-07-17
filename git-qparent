@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Like |hg qparent|, gives last common revision between HEAD and upstream.
+# Like |hg qparent|, gives last common revision between HEAD and upstream
+#
+# The upstream branch is set via git branch --set-upstream <branch> <upstream>.
+# If no upstream branch has been explicitly set, we use origin/master.
 
 PATH="$(dirname $0):$PATH"
-git merge-base HEAD $(git tracks)
+git merge-base HEAD $(git tracks -d)

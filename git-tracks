@@ -1,15 +1,25 @@
 #!/bin/bash
 #
+# Get the upstream branch for the current branch.  If -d/--default is passed,
+# outputs origin/master if there's no upstream branch.
+#
+# To set <branch>'s upstream branch, run
+#
+#   $ git branch --set-upstream <branch> <upstream>
+#
+#
 # Based on http://serverfault.com/a/352236/38694
 
 branch=$(git symbolic-ref HEAD) || exit $?
 branch=${branch##refs/heads/}
-remote=$(git config "branch.${branch}.remote") || exit $?
-remoteBranch=$(git config "branch.${branch}.merge") || exit $?
+remote=$(git config "branch.${branch}.remote" || echo '.')
+remoteBranch=$(git config "branch.${branch}.merge" || echo '')
 remoteBranch=${remoteBranch##refs/heads/}
 
 if [[ "$remote" != "." ]]; then
   echo "${remote:?}/${remoteBranch:?}"
-else
+elif [[ "$remoteBranch" != "" ]]; then
   echo "${remoteBranch:?}"
+elif [[ "$1" == '-d' || "$1" == '--default' ]]; then
+  echo "origin/master"
 fi

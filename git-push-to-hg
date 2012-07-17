@@ -6,7 +6,7 @@ set -e
 #
 # If no commit range is specified, we push
 #
-#   $(git merge-base $(git-tracks) HEAD)..HEAD.
+#   $(git merge-base $(git-tracks -d) HEAD)..HEAD.
 #
 # Otherwise, we push the commit(s) given.
 
@@ -45,7 +45,7 @@ fi
 
 revs="$2"
 if [[ "$revs" == "" ]]; then
-  revs="$(git merge-base HEAD $(git tracks))..HEAD"
+  revs="$(git merge-base HEAD $(git tracks -d))..HEAD"
 fi
 
 # If revs doesn't contain "..", add "$revs^.." to the beginning.
@@ -72,7 +72,7 @@ function hg_cmd() {
 }
 
 first_rev=$(echo "$revs" | sed -e 's/\.\..*//')
-git_parent_rev=$(git merge-base $first_rev $(git tracks))
+git_parent_rev=$(git merge-base $first_rev $(git tracks -d))
 
 # Run git-to-hg-commit, and only run hg pull if it fails.
 if [[ "$push_to_tip" == "0" ]]; then
