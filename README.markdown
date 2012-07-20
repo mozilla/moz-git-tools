@@ -4,6 +4,11 @@ In order to set this up, clone this repository somewhere,
 run the `git submodule init` and then `git submodule update`
 command, and add your clone to $PATH.
 
+Many of these tools rely on a notion of your current branch's "upstream
+branch".  For example, `git push-to-try` pushes to try all patches in your
+current branch that aren't upstream.  See the `git-tracks` section below for
+details on how to change your upstream branch.
+
 ## git-bz
 
 Push patches from git to bugzilla.
@@ -14,13 +19,15 @@ Create a new working directory based off an existing local git repository.
 
 ## git-tracks
 
-Gets the name of the current branch's upstream branch.
+Gets the name of the current branch's upstream branch.  With `-d` or
+`--default`, git-tracks outputs "origin/master" if there's no upstream branch.
 
 You can set this with `git branch --set-upstream CURRENT_BRANCH
-UPSTREAM_BRANCH`.  (Note that you must sepecify the current branch in this
-call!)
+UPSTREAM_BRANCH`.  (Don't do `git branch --set-upstream BRANCH`; that won't
+work right!)
 
-Many other tools here rely on your branch having the correct upstream branch.
+Many other tools in this package use `git tracks -d` as your branch's "upstream
+branch".
 
 ## git-to-hg-commit
 
