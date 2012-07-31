@@ -3,12 +3,12 @@
 if [[ "$1" == "--help" ]]; then
   echo "Usage: $0 [GIT_REV]
 Invoke \$EDITOR on the files modified in the given revision.
-If no revision is given, invoke \$EDITOR on the files modified in the current branch."
+If no revision is given, invoke \$EDITOR on the files modified in git status."
   exit 1
 fi
 
 if [[ "$1" == "" ]]; then
-  revs="$(git merge-base $(git-tracks -d) HEAD)..HEAD"
+  $EDITOR $(git diff --name-only)
 else
   if ! echo "$1" | grep -q '\.\.'; then
     revs="$1^..$1"

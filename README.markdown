@@ -68,7 +68,7 @@ rebase your current branch without moving the commits to a new upstream base.
 ## git-edit-files
 
 Open all the files modified in the specified rev range in your `$EDITOR`.  (If
-no rev range is specified, open the files modified in your current branch.)
+no rev range is specified, open the files modified in your current checkout.)
 
 ## git-qapplied
 
