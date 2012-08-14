@@ -54,6 +54,22 @@ if ! echo "$revs" | fgrep ".."; then
   revs="$revs^..$revs"
 fi
 
+# Check that $revs is a linear sequence of commits.  We don't support anything
+# else, at the moment.
+if [[ "$(git log --merges $revs)" != "" ]]; then
+  echo ""
+  echo "It looks like the commit range we're trying to push contains merges."
+  echo "We do not currently support this; sorry!  As a workaround, fold your"
+  echo "commits."
+  echo ""
+  echo "Run "
+  echo ""
+  echo "  $ git log --merges $revs"
+  echo ""
+  echo "to see the list of the offending merge commits."
+  exit 1
+fi
+
 echo "On branch $(git branch | grep '^\*' | cut -f 2 -d ' ')."
 git log --reverse --date-order --pretty=oneline --abbrev-commit $revs
 
