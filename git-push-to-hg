@@ -76,7 +76,8 @@ git log --reverse --date-order --pretty=oneline --abbrev-commit $revs
 git_status=$(git status --porcelain)
 if [[ "$git_status" != "" ]]; then
   echo ""
-  echo "Warning; tree is not clean!"
+  echo "Warning; tree has uncommitted changes!  The following changes will "
+  echo "not be pushed."
   echo "$git_status"
   read -sn1 -p "Press any key to continue, or <ctrl-c> to quit. "
   echo ""
