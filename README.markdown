@@ -41,9 +41,9 @@ Push commits from git to a new qqueue in an hg repository.  If GIT\_REVS is
 omitted, push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e.
 everything in the current branch that's not upstream).
 
-If `-t` or `--tip` is specified, update the hg repository to its tip before
-pushing.  Otherwise, update the hg repository to the revision atop which the
-git commits are based.
+If `-t` or `--tip` is specified, pull and update the hg repository to latest
+tip before pushing.  Otherwise, update the hg repository to the revision atop
+which the git commits are based.
 
 ## git-push-to-try
 
