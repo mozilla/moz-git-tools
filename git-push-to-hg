@@ -121,7 +121,7 @@ hg_cmd qqueue -q --create git-temp
 # if there's nothing to pull, hg pull -u will skip the update!)
 if [[ "$push_to_tip" != 0 ]]; then
   hg_cmd pull
-  hg_cmd up
+  hg_cmd up --check
 fi
 
 # Pass --quiet only for not-old-git.
