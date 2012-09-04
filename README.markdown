@@ -11,7 +11,20 @@ details on how to change your upstream branch.
 
 ## git-bz
 
-Push patches from git to bugzilla.
+Push commits from git to bugzilla.  For example, to push the two top commits in
+your repository, run
+
+    git bz attach -e HEAD^^..
+
+(This will complain if your commits don't mention the same bug number in their
+summaries.)
+
+If a commit's message starts with "FOLD", it will be folded into the previous
+commit before pushing to bugzilla.
+
+(Actually, git-bz can do more than push commits from git to bugzilla.  But I
+don't use it for anything else, so I'm not sure which of the other features
+work with bugzilla.mozilla.org.)
 
 ## git-new-workdir
 
