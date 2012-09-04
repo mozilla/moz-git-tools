@@ -117,6 +117,13 @@ hg_cmd qqueue patches
 hg_cmd qqueue -q --purge git-temp || true
 hg_cmd qqueue -q --create git-temp
 
+# If we passed --tip, do hg pull && hg up.  (This isn't the same as hg pull -u:
+# if there's nothing to pull, hg pull -u will skip the update!)
+if [[ "$push_to_tip" != 0 ]]; then
+  hg_cmd pull
+  hg_cmd up --check
+fi
+
 # Pass --quiet only for not-old-git.
 if [[ "$old_git" == 0 ]]; then
   git_format_quiet='--quiet'
