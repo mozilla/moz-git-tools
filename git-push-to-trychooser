@@ -4,9 +4,9 @@ set -e
 # Uses push-to-hg to push revision(s) to the specified hg repository, and
 # then runs the hg "trychooser" command for pushing the commits to the tryserver.
 
-THIS_DIR=$(cd `dirname $0`; pwd)
-TRYCHOOSER=$THIS_DIR/trychooser/trychooser
-PATH=$THIS_DIR:$PATH
+THIS_DIR=$(cd `dirname "$0"`; pwd)
+TRYCHOOSER="$THIS_DIR/trychooser/trychooser"
+PATH="$THIS_DIR:$PATH"
 
 hg_cmd() {
   # Don't suppress HG output since trychooser uses prompts
@@ -19,11 +19,11 @@ if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
 fi
 
 if [[ "$hg_repo" == "" ]]; then
-  echo "Usage: $(basename $0) [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
+  echo "Usage: $(basename "$0") [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
   exit 255
 fi
 
 git push-to-hg $@
 
 hg_cmd --config "extensions.trychooser=$TRYCHOOSER" trychooser
-hg_cmd qpop -a
+hg_cmd -q qpop -a > /dev/null
