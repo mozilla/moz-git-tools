@@ -68,6 +68,13 @@ repository.
 
 TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
+## git-push-to-trychooser
+
+Usage: `git push-to-trychooser [-t/--tip] PATH_TO_HG_REPO [GIT_REVS]`
+
+The same as `git push-to-hg`, but also runs the interactive trychooser command
+before pushing the commits to try from the given hg repository.
+
 ## git-qparent
 
 Outputs the last common revision of the current branch and upstream.
