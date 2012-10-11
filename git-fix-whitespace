@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git commit -a --no-verify -m TEMP
+git rebase --whitespace=fix HEAD^
+git reset HEAD^

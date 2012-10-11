@@ -90,6 +90,14 @@ rebase your current branch without moving the commits to a new upstream base.
 Open all the files modified in the specified rev range in your `$EDITOR`.  (If
 no rev range is specified, open the files modified in your current checkout.)
 
+## git-fix-whitespace
+
+Eliminate any trailing whitespace from your uncommitted changes.
+
+Note that this will reset your index; that is, any changes you've `git add`'ed
+will need to be added again.  But it won't (or at least, shouldn't!) erase
+any changes.
+
 ## git-qapplied
 
 Like `hg qapplied`, output the commits in this branch which are not upstream.
