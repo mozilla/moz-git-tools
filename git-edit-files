@@ -8,14 +8,21 @@ If no revision is given, invoke \$EDITOR on the files modified in git status."
 fi
 
 if [[ "$1" == "" ]]; then
-  $EDITOR $(git diff --name-only)
-  exit 0
-else
-  if ! echo "$1" | grep -q '\.\.'; then
-    revs="$1^..$1"
-  else
-    revs="$1"
+  files=$(git diff --name-only)
+  if [[ "$files" == "" ]]; then
+    echo "No files modified in current checkout."
+    echo "Did you mean to do |git edit-files REV|?"
+    exit 2
   fi
+
+  $EDITOR $files
+  exit 0
+fi
+
+if ! echo "$1" | grep -q '\.\.'; then
+  revs="$1^..$1"
+else
+  revs="$1"
 fi
 
 files=$(git diff --name-only $revs)
