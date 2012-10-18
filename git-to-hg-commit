@@ -9,7 +9,7 @@ if [[ "$git_commit_id" == "" ]]; then
 fi
 
 if [[ "$git_commit_id" == "" || "$hg_repo" == "" ]]; then
-  echo "Usage: $(basename $0) path-to-hg-repo [git-commit-id] [path-to-git-repo]" 1>&2
+  echo "Usage: $(basename $0) path-to-hg-repo [path-to-git-repo] [git-commit-id]" 1>&2
   exit 255
 fi
 
