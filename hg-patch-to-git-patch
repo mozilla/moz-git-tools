@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+r'''Convert an hg-exported patch to a patch suitable for use by git am.
+
+>>> hg_patch_to_git_patch(StringIO('# HG changeset patch\n# User Foo <foo@bar.com>\n# Node ID deadbeef\n# Parent cafebabe\nCommit\n\nMsg\n\ndiff -\ndiffdiff'))
+From: Foo <foo@bar.com>
+Subject: Commit
+<BLANKLINE>
+Msg
+<BLANKLINE>
+diff -
+diffdiff
+
+'''
+
+from __future__ import print_function
+import sys
+from cStringIO import StringIO
+
+def hg_patch_to_git_patch(hg_patch_file):
+    hg_patch = hg_patch_file.read().split('\n')
+
+    author = None
+    date = None # not currently used
+    for i in range(len(hg_patch)):
+        line = hg_patch[i]
+        if not line.startswith('#'):
+            break
+
+        if line.startswith('# User '):
+            author = line[len('# User '):]
+        if line.startswith('# Date '): 
+            date = line[len('# Date '):]
+
+    commit_msg = []
+    for i in range(i, len(hg_patch)):
+        line = hg_patch[i]
+        if line.startswith('diff -'):
+            break
+        commit_msg.append(hg_patch[i]) 
+
+    if len(commit_msg) > 1 and not commit_msg[1].strip():
+        del commit_msg[1]
+
+    # Remove blank lines at the end of the commit message.
+    while commit_msg and not commit_msg[-1].strip():
+        del commit_msg[-1]
+
+    diff = hg_patch[i:]
+
+    if author:
+        # XXX ensure this has the Foo <foo@bar.com> form.
+        # XXX Do I have to worry about text encoding here?
+        print('From: %s' % author)
+    else:
+        print('From: unknown@unknown.com')
+    if commit_msg:
+        print('Subject: %s' % commit_msg[0])
+
+    print()
+    print('\n'.join(commit_msg[1:]))
+    print()
+    print('\n'.join(diff))
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == '--test':
+        import doctest
+        doctest.testmod()
+        sys.exit(0)
+
+    if len(sys.argv) == 1:
+        file = sys.stdin
+    elif len(sys.argv) == 2:
+        file = open(sys.argv[1], 'r')
+    else:
+        print('Error: Specify one file, or pipe input on stdin.')
+        sys.exit(1)
+
+    hg_patch_to_git_patch(file)
