@@ -1,6 +1,10 @@
 #!/bin/sh
 
-# From http://git.kernel.org/?p=git/git.git;a=blob_plain;f=contrib/workdir/git-new-workdir
+# Copied verbatim from
+# http://git.kernel.org/?p=git/git.git;a=blob_plain;f=contrib/workdir/git-new-workdir
+#
+# This file is covered under GPLv2 (and /not/ later versions).  See
+# http://git.kernel.org/cgit/git/git.git/plain/COPYING
 
 usage () {
 	echo "usage:" $@
