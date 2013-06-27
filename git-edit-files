@@ -7,8 +7,11 @@ If no revision is given, invoke \$EDITOR on the files modified in git status."
   exit 1
 fi
 
+# The diff filter is everything except D; we don't want to edit deleted files!
+diff_params="--diff-filter=ACMRTUXB --name-only"
+
 if [[ "$1" == "" ]]; then
-  files=$(git diff --name-only)
+  files=$(git diff $diff_params)
   if [[ "$files" == "" ]]; then
     echo "No files modified in current checkout."
     echo "Did you mean to do |git edit-files REV|?"
@@ -25,7 +28,7 @@ else
   revs="$1"
 fi
 
-files=$(git diff --name-only $revs)
+files=$(git diff $diff_params $revs)
 if [[ "$files" == "" ]]; then
   echo "No files modified in range $revs."
   exit 2
