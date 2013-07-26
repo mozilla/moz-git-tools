@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+"""Output a link to a particular file+line in a remote repository.
+
+Right now this works only for repos downstream from github."""
+
+from __future__ import print_function
+import os
+import sys
+import argparse
+import subprocess
+import re
+
+def get_filename_and_lineno(args):
+    split = args.file.split(':')
+    if len(split) > 2:
+        print('Too many ":"s in filename %s; max is 1', file=sys.stderr)
+        sys.exit(1)
+    filename = split[0]
+    if len(split) == 1:
+        lineno = 0
+    else:
+        try:
+            lineno = int(split[1])
+        except:
+            print('Value in filename after ":" must be an integer.', file=sys.stderr)
+    return (filename, lineno)
+
+def git(*args):
+    return subprocess.check_output(['git'] + list(args)).strip()
+
+def main(args):
+    (filename, lineno) = get_filename_and_lineno(args)
+    gitdir = git('rev-parse', '--show-toplevel')
+    rel_filename = os.path.relpath(os.path.abspath(filename), gitdir)
+
+    upstream_branch = git('tracks')
+    upstream_repo = upstream_branch.split('/')[0] 
+
+    remote_info = git('remote', 'show', '-n', upstream_repo)
+    fetch_line = remote_info.split('\n')[1]
+    fetch_url = re.match('\s*Fetch URL:\s*(.*)', fetch_line).group(1)
+    
+    # github ssh URL --> https URL
+    fetch_url = re.sub('^git@github.com:', 'https://github.com/', fetch_url)
+
+    fetch_url = re.sub('^git://', 'https://', fetch_url)
+
+    # Strip off trailing .git
+    base_url = re.sub('.git$', '', fetch_url)
+
+    upstream_commit = git('qparent')
+
+    url = '%s/tree/%s/%s' % (base_url, git('qparent'), rel_filename)
+    if lineno:
+        url = '%s#L%d' % (url, lineno)
+    print(url)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('file', metavar='FILE',
+                        help='Either path/to/file or path/to/file:lineno')
+    args = parser.parse_args()
+    main(args)
