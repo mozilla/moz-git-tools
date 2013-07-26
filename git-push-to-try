@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Usage: git-push-to-try [-t|--tip] [-r REVS|--rev REVS] HG_REPO TRY_PARAMS
 
 set -e
 PATH=$(dirname $0):$PATH
@@ -10,15 +12,27 @@ function hg_cmd() {
 
 # Sigh, command-line parsing in bash is so much fun.
 
-if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
-  tip_cmd="--tip"
-  shift
-fi
+while true; do
+  if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+    tip_cmd="--tip"
+    shift
+    continue
+  fi
+
+  if [[ "$1" == "-r" || "$1" == "--rev" ]]; then
+    revs="$2"
+    shift
+    shift
+    continue
+  fi
+
+  break
+done
 
 hg_repo=$1
 shift
 
-git-push-to-hg $tip_cmd "$hg_repo"
+git-push-to-hg $tip_cmd $revs "$hg_repo"
 
 commit_msg=$(hg log -R "$hg_repo" -l1 --template '{desc}')
 hg_cmd qref -sl <(echo "try: $@ $commit_msg")
