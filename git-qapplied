@@ -1,10 +1,19 @@
 #!/bin/bash
 
-# As an analog to |hg qapplied|, |git qapplied| lists the commits in the
-# current branch which are not in the master branch.
+# USAGE: git qapplied [branch]
+#
+# As an analog to |hg qapplied|, |git qapplied| lists the commits in the given
+# branch which are not in the master branch.  If a branch is not given, the
+# branch is the current branch.
 
 set -e
-
 PATH="$(dirname $0):$PATH"
-echo "On branch $(git branch | grep '^\*' | sed 's/^\* //') (downstream from $(git tracks -d))"
-git log --reverse --date-order --pretty=oneline --abbrev-commit $(git qparent)..HEAD
+
+if [[ "$1" != "" ]]; then
+  branch="$1"
+else
+  branch="$(git branch | grep '^\*' | sed 's/^\* //')"
+fi
+
+echo "Branch $branch (downstream from $(git tracks -d $branch))"
+git log --reverse --date-order --pretty=oneline --abbrev-commit "$(git qparent "$branch")".."$branch"

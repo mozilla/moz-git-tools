@@ -1,7 +1,12 @@
 #!/bin/bash
 #
-# Get the upstream branch for the current branch.  If -d/--default is passed,
-# outputs origin/master if there's no upstream branch.
+# Usage: git tracks [branch]
+#
+# Get the upstream branch of the given branch.  If no branch is given, get the
+# upstream branch of the currrent branch.
+#
+# If -d/--default is passed, outputs origin/master if there's no upstream
+# branch.
 #
 # To set <branch>'s upstream branch, run
 #
@@ -10,8 +15,22 @@
 #
 # Based on http://serverfault.com/a/352236/38694
 
-branch=$(git symbolic-ref HEAD) || exit $?
-branch=${branch##refs/heads/}
+if [[ "$1" == "-d" || "$1" == "--default" ]]; then
+  use_default=1
+else
+  use_default=0
+fi
+
+shift
+
+if [[ "$1" == "" ]]; then
+  branch=$(git symbolic-ref HEAD) || exit $?
+  branch=${branch##refs/heads/}
+else
+  branch="$1"
+  shift
+fi
+
 remote=$(git config "branch.${branch}.remote" || echo '.')
 remoteBranch=$(git config "branch.${branch}.merge" || echo '')
 remoteBranch=${remoteBranch##refs/heads/}
@@ -20,6 +39,6 @@ if [[ "$remote" != "." ]]; then
   echo "${remote:?}/${remoteBranch:?}"
 elif [[ "$remoteBranch" != "" ]]; then
   echo "${remoteBranch:?}"
-elif [[ "$1" == '-d' || "$1" == '--default' ]]; then
+elif [[ "$use_default" == 1 ]]; then
   echo "origin/master"
 fi
