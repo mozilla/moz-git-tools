@@ -24,7 +24,7 @@ fi
 shift
 
 if [[ "$1" == "" ]]; then
-  branch=$(git symbolic-ref HEAD) || exit $?
+  branch=$(git rev-parse --symbolic-full-name HEAD) || exit $?
   branch=${branch##refs/heads/}
 else
   branch="$1"
