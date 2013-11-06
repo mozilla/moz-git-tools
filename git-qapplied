@@ -11,9 +11,11 @@ PATH="$(dirname $0):$PATH"
 
 if [[ "$1" != "" ]]; then
   branch="$1"
+  branchName="$1"
 else
-  branch="$(git branch | grep '^\*' | sed 's/^\* //')"
+  branch="HEAD"
+  branchName="$(git branch | grep '^\*' | sed 's/^\* //')"
 fi
 
-echo "Branch $branch (downstream from $(git tracks -d $branch))"
+echo "Branch $branchName (downstream from $(git tracks -d $branch))"
 git log --reverse --date-order --pretty=oneline --abbrev-commit "$(git qparent "$branch")".."$branch"
