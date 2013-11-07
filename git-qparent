@@ -8,9 +8,12 @@
 # The upstream branch is set via git branch --set-upstream <branch> <upstream>.
 # If no upstream branch has been explicitly set, we use origin/master.
 
-PATH="$(dirname $0):$PATH"
+set -e
+
+export PATH="$(dirname "$0"):$PATH"
+
 if [[ "$1" == "" ]]; then
-  git merge-base HEAD $(git tracks -d)
+  git merge-base HEAD "$(git tracks -d)"
 else
-  git merge-base "$1" $(git tracks -d "$1")
+  git merge-base "$1" "$(git tracks -d "$1")"
 fi

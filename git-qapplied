@@ -7,15 +7,11 @@
 # branch is the current branch.
 
 set -e
-PATH="$(dirname $0):$PATH"
 
-if [[ "$1" != "" ]]; then
-  branch="$1"
-  branchName="$1"
-else
-  branch="HEAD"
-  branchName="$(git branch | grep '^\*' | sed 's/^\* //')"
-fi
+export PATH="$(dirname "$0"):$PATH"
 
-echo "Branch $branchName (downstream from $(git tracks -d $branch))"
+branch="$1"
+[ ! -z "$branch" ] || branch="$(git rev-parse --abbrev-ref HEAD)"
+
+echo "Branch $branch (downstream from $(git tracks -d $branch))"
 git log --reverse --date-order --pretty=oneline --abbrev-commit "$(git qparent "$branch")".."$branch"
