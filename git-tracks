@@ -39,6 +39,8 @@ if [[ "$remote" != "." ]]; then
   echo "${remote:?}/${remoteBranch:?}"
 elif [[ "$remoteBranch" != "" ]]; then
   echo "${remoteBranch:?}"
-elif [[ "$use_default" == 1 ]]; then
-  echo "origin/master"
+elif [[ "$use_default" == 1 ]] && git rev-parse origin/master &>/dev/null; then
+  echo origin/master
+else
+  echo >&2 "Warning: Could not find a upstream for $branch"
 fi
