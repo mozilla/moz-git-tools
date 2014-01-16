@@ -30,7 +30,14 @@ while true; do
 done
 
 hg_repo=$1
-shift
+if [[ -n "$hg_repo" ]]; then
+    shift
+fi
+
+if [[ -z "$hg_repo" || -z "$@" ]]; then
+    echo "usage: $(basename "$0") [-t|--tip] [-r REVS|--rev REVS] HG_REPO TRY_PARAMS"
+    exit 255
+fi
 
 git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 
