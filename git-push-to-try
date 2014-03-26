@@ -41,8 +41,7 @@ fi
 
 git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 
-commit_msg=$(hg log -R "$hg_repo" -l1 --template '{desc}')
-hg_cmd qref -sl <(echo "try: $@ $commit_msg")
+hg_cmd qnew try -l <(echo "try: $@")
 echo "try: $@"
 
 hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
