@@ -19,7 +19,7 @@ r"""Git format-patch to hg importable patch.
 import sys
 import re
 import fileinput
-import email, email.parser, email.header
+import email, email.parser, email.header, email.utils
 import math
 from cStringIO import StringIO
 from itertools import takewhile
@@ -65,9 +65,10 @@ def clean_header(hdr_string):
 def process(git_patch_file):
   parser = email.parser.Parser()
   msg = parser.parse(git_patch_file)
+  parsed_from = email.utils.parseaddr(clean_header(msg['From']))
 
   return '\n'.join(['# HG changeset patch',
-                    '# User ' + clean_header(msg['From']),
+                    '# User %s <%s>' % parsed_from,
                     '',
                     clean_header(msg['subject']),
                     '',
