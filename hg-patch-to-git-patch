@@ -39,6 +39,9 @@ def hg_patch_to_git_patch(hg_patch_file):
             break
         commit_msg.append(hg_patch[i]) 
 
+    if len(commit_msg) == 1 and not commit_msg[0].strip():
+        commit_msg[0] = hg_patch_file.name
+
     if len(commit_msg) > 1 and not commit_msg[1].strip():
         del commit_msg[1]
 
