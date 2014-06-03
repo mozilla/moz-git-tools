@@ -66,11 +66,16 @@ def process(git_patch_file):
   parser = email.parser.Parser()
   msg = parser.parse(git_patch_file)
   parsed_from = email.utils.parseaddr(clean_header(msg['From']))
+  commit_title = clean_header(msg['subject'])
+
+  nuke_prefix = "[PATCH] "
+  if commit_title.startswith(nuke_prefix):
+    commit_title = commit_title[len(nuke_prefix):]
 
   return '\n'.join(['# HG changeset patch',
                     '# User %s <%s>' % parsed_from,
                     '',
-                    clean_header(msg['subject']),
+                    commit_title,
                     '',
                     msg.get_payload()])
 
