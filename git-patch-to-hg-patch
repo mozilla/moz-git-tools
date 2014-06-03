@@ -65,9 +65,14 @@ def clean_header(hdr_string):
 def process(git_patch_file):
   parser = email.parser.Parser()
   msg = parser.parse(git_patch_file)
-  parsed_from = email.utils.parseaddr(clean_header(msg['From']))
+  from_hdr = clean_header(msg['From'])
   commit_title = clean_header(msg['subject'])
+  if not len(commit_title) or not len(from_hdr):
+    sys.stderr.write("%s does not look like a valid git patch file, skipping\n"
+                     % git_patch_file.name)
+    return
 
+  parsed_from = email.utils.parseaddr(from_hdr)
   nuke_prefix = "[PATCH] "
   if commit_title.startswith(nuke_prefix):
     commit_title = commit_title[len(nuke_prefix):]
@@ -117,8 +122,8 @@ if __name__ == "__main__":
 
     # Process.
 
-    # Write them back to the same file.
-    f = open(filename, 'w')
-    f.writelines(lines)
-    f.close()
-
+    if lines:
+      # Write them back to the same file.
+      f = open(filename, 'w')
+      f.writelines(lines)
+      f.close()
