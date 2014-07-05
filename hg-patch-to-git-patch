@@ -31,12 +31,11 @@ def hg_patch_to_git_patch(hg_patch_file):
 
         if line.startswith('# User '):
             author = line[len('# User '):]
-        if date_on_next_line:
-            date = line[1:].lstrip()
-            date_on_next_line = False
-        if line.startswith('# Date '):
+        elif line.startswith('# Date '):
             date = line[len('# Date '):]
             date_on_next_line = True
+        elif date_on_next_line:
+            date_on_next_line = False
 
     commit_msg = []
     for i in range(i, len(hg_patch)):
