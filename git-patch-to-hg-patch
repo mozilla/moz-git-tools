@@ -43,9 +43,9 @@ def clean_header(hdr_string):
   r"""Transform a header split over many lines into a header split only where
   linebreaks are intended.  This is important because hg cares about the first
   line of the commit message.
-  
+
   Also clean up weird encoding crap.
-  
+
   >>> clean_header('Foo\n bar\n baz')
   'Foo bar baz'
   >>> clean_header('Foo\n bar\nSpam\nEggs')
