@@ -43,9 +43,9 @@ def clean_header(hdr_string):
   r"""Transform a header split over many lines into a header split only where
   linebreaks are intended.  This is important because hg cares about the first
   line of the commit message.
-  
+
   Also clean up weird encoding crap.
-  
+
   >>> clean_header('Foo\n bar\n baz')
   'Foo bar baz'
   >>> clean_header('Foo\n bar\nSpam\nEggs')
@@ -77,27 +77,23 @@ def process(git_patch_file):
   if commit_title.startswith(nuke_prefix):
     commit_title = commit_title[len(nuke_prefix):]
 
+  patch_body = msg.get_payload()
+
+  # git format-patch wraps the diff (including trailing whitespace):
+  #   ---
+  #   <diff>
+  #   -- 
+  #   2.0.3
+  # This doesn't hurt parsing the diff at all, but the version number is
+  # nonsense once the git specific items have been stripped
+  patch_body = re.sub(r'--\s?\n[0-9\.]+\n$', '', patch_body)
+
   return '\n'.join(['# HG changeset patch',
                     '# User %s <%s>' % parsed_from,
                     '',
                     commit_title,
                     '',
-                    msg.get_payload()])
-
-  # Decode the header into a UTF-8 string, in case it uses MIME encoded words
-  encoded_subject = Header(subject)
-  subject = ''
-  for (part, encoding) in decode_header(encoded_subject):
-    if encoding is None:
-      subject += part
-    else:
-      subject += part.decode(encoding).encode('utf-8')
-
-  # Filter a version (ie, v3, v12) out of the subject.
-  subject = re.sub(r'\s?v\d\d?', '', subject)
-
-  # Write the header.
-  return ['# HG changeset patch\n', author, '\n', subject, '\n'] + list(iterlines)
+                    patch_body])
 
 if __name__ == "__main__":
   if len(sys.argv) > 1 and sys.argv[1] == '--test':
