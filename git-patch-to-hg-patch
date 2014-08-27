@@ -84,21 +84,6 @@ def process(git_patch_file):
                     '',
                     msg.get_payload()])
 
-  # Decode the header into a UTF-8 string, in case it uses MIME encoded words
-  encoded_subject = Header(subject)
-  subject = ''
-  for (part, encoding) in decode_header(encoded_subject):
-    if encoding is None:
-      subject += part
-    else:
-      subject += part.decode(encoding).encode('utf-8')
-
-  # Filter a version (ie, v3, v12) out of the subject.
-  subject = re.sub(r'\s?v\d\d?', '', subject)
-
-  # Write the header.
-  return ['# HG changeset patch\n', author, '\n', subject, '\n'] + list(iterlines)
-
 if __name__ == "__main__":
   if len(sys.argv) > 1 and sys.argv[1] == '--test':
     import doctest
