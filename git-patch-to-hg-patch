@@ -77,12 +77,23 @@ def process(git_patch_file):
   if commit_title.startswith(nuke_prefix):
     commit_title = commit_title[len(nuke_prefix):]
 
+  patch_body = msg.get_payload()
+
+  # git format-patch wraps the diff (including trailing whitespace):
+  #   ---
+  #   <diff>
+  #   -- 
+  #   2.0.3
+  # This doesn't hurt parsing the diff at all, but the version number is
+  # nonsense once the git specific items have been stripped
+  patch_body = re.sub(r'--\s?\n[0-9\.]+\n$', '', patch_body)
+
   return '\n'.join(['# HG changeset patch',
                     '# User %s <%s>' % parsed_from,
                     '',
                     commit_title,
                     '',
-                    msg.get_payload()])
+                    patch_body])
 
 if __name__ == "__main__":
   if len(sys.argv) > 1 and sys.argv[1] == '--test':
