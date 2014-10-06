@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# Usage: git-branch-to-patch [--directory=output_dir] BASE_BRANCH
+#
+# It will automatically grab the commit message from the first child.
+# Intended use:
+#
+# 1. Start with basic branch, say fx-team.
+# 2. Create new branch, say feature-branch.
+# 3. Start hacking. Do first commit with good commit message that will be on the patch.
+# 4. Hack, hack, hack. Do commit messages useful for you tracking your work in progress
+# 5. `git-branch-to-patch fx-team` will squash all your work into a single commit patch
+#    named feature-branch.patch.
+
+OUTPUT_DIR="$PWD/"
+case "$1" in
+  --directory=*)
+    OUTPUT_DIR="${1#*=}"
+    shift
+esac
+
+BASE="$1"
+TMP_BRANCH_NAME="tmp_patcher_branch"
+
+# Git patcher helper
+base_branch="$(git rev-parse $BASE)"
+branch="$(git rev-parse --abbrev-ref HEAD)"
+patch_name="$branch.patch"
+
+# Get child of $base_branch
+first="$(git rev-list --ancestry-path "$base_branch"..HEAD | tail -1)" || return 1
+
+# Get its message
+msg="$(git log --format=%B -n1 $first)"
+
+# Create tmp branch to do rebase
+git checkout -b "$TMP_BRANCH_NAME"
+
+# Soft rebase
+git reset --soft "$base_branch"
+
+# Single commit with msg
+git commit -m "$msg"
+
+# Create patch
+git format-patch --unified=8 "$base_branch" --stdout > "$patch_name"
+
+# Convert to hg format
+git-patch-to-hg-patch "$patch_name"
+
+# Get back to the original branch
+git checkout $branch
+
+# Drop the temp branch
+git branch -D "$TMP_BRANCH_NAME"
+
+# Move
+mv "$patch_name" "$OUTPUT_DIR"
+
+# Some output
+echo "Patch saved as: $OUTPUT_DIR$patch_name"
+
