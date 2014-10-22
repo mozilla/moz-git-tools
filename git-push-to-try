@@ -46,6 +46,6 @@ echo "try: $@"
 
 hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
 echo
-echo "https://tbpl.mozilla.org/?tree=Try&rev=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
+echo "https://treeherder.mozilla.org/#/jobs?repo=try&revision=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
 
 hg_cmd qpop -a
