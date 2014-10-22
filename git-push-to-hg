@@ -71,7 +71,7 @@ if [[ "$(git log --merges $revs)" != "" ]]; then
 fi
 
 echo "On branch $(git branch | grep '^\*' | cut -f 2 -d ' ')."
-git log --reverse --date-order --pretty=oneline --abbrev-commit $revs
+git --no-pager log --reverse --date-order --pretty=oneline --abbrev-commit $revs
 
 git_status=$(git status --porcelain)
 if [[ "$git_status" != "" ]]; then
