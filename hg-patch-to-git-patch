@@ -4,6 +4,7 @@ r'''Convert an hg-exported patch to a patch suitable for use by git am.
 
 >>> hg_patch_to_git_patch(StringIO('# HG changeset patch\n# User Foo <foo@bar.com>\n# Node ID deadbeef\n# Parent cafebabe\nCommit\n\nMsg\n\ndiff -\ndiffdiff'))
 From: Foo <foo@bar.com>
+Date: Fri, 4 Jul 2014 21:59:33 -0400
 Subject: Commit
 <BLANKLINE>
 Msg
@@ -22,6 +23,7 @@ def hg_patch_to_git_patch(hg_patch_file):
 
     author = None
     date = None # not currently used
+    date_on_next_line = False
     for i in range(len(hg_patch)):
         line = hg_patch[i]
         if not line.startswith('#'):
@@ -29,15 +31,18 @@ def hg_patch_to_git_patch(hg_patch_file):
 
         if line.startswith('# User '):
             author = line[len('# User '):]
-        if line.startswith('# Date '): 
+        elif line.startswith('# Date '):
             date = line[len('# Date '):]
+            date_on_next_line = True
+        elif date_on_next_line:
+            date_on_next_line = False
 
     commit_msg = []
     for i in range(i, len(hg_patch)):
         line = hg_patch[i]
         if line.startswith('diff -'):
             break
-        commit_msg.append(hg_patch[i]) 
+        commit_msg.append(hg_patch[i])
 
     if len(commit_msg) == 1 and not commit_msg[0].strip():
         commit_msg[0] = hg_patch_file.name
@@ -57,6 +62,8 @@ def hg_patch_to_git_patch(hg_patch_file):
         print('From: %s' % author)
     else:
         print('From: unknown@unknown.com')
+    if date:
+        print('Date: %s' % date)
     if commit_msg:
         print('Subject: %s' % commit_msg[0])
 
