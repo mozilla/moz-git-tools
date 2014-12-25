@@ -5,6 +5,7 @@ r'''Convert an hg-exported patch to a patch suitable for use by git am.
 >>> hg_patch_to_git_patch(StringIO('# HG changeset patch\n# User Foo <foo@bar.com>\n# Node ID deadbeef\n# Parent cafebabe\nCommit\n\nMsg\n\ndiff -\ndiffdiff'))
 From: Foo <foo@bar.com>
 Subject: Commit
+Signed-off-by: Foo <foo@bar.com>
 <BLANKLINE>
 Msg
 <BLANKLINE>
@@ -14,10 +15,11 @@ diffdiff
 '''
 
 from __future__ import print_function
+import os
 import sys
 from cStringIO import StringIO
 
-def hg_patch_to_git_patch(hg_patch_file):
+def hg_patch_to_git_patch(hg_patch_file, signoff=False):
     hg_patch = hg_patch_file.read().split('\n')
 
     author = None
@@ -72,6 +74,10 @@ def hg_patch_to_git_patch(hg_patch_file):
         print('Date: %s' % date)
     if commit_msg:
         print('Subject: %s' % commit_msg[0])
+    if signoff:
+        user_name = os.popen('git config user.name').read().strip()
+        user_email = os.popen('git config user.email').read().strip()
+        print("Signed-off-by: %s <%s>" % (user_name, user_email))
 
     print()
     print('\n'.join(commit_msg[1:]))
@@ -84,12 +90,16 @@ if __name__ == '__main__':
         doctest.testmod()
         sys.exit(0)
 
+    signoff = False
     if len(sys.argv) == 1:
         file = sys.stdin
+    elif (len(sys.argv) == 2) and sys.argv[1] == '-s':
+        file = sys.stdin
+        signoff = True
     elif len(sys.argv) == 2:
         file = open(sys.argv[1], 'r')
     else:
         print('Error: Specify one file, or pipe input on stdin.')
         sys.exit(1)
 
-    hg_patch_to_git_patch(file)
+    hg_patch_to_git_patch(file, signoff)
