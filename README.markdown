@@ -60,11 +60,16 @@ which the git commits are based.
 
 ## git-push-to-try
 
-Usage: `git push-to-try [-t/--tip] PATH_TO_HG_REPO TRYCHOOSER_PARAMS`
+Usage: `git push-to-try [-r/--rev REVISION_OR_RANGE] [-t/--tip] PATH_TO_HG_REPO TRYCHOOSER_PARAMS`
 
 Push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e. everything
 in the current branch that's not upstream) to try, by way of the given hg
 repository.
+
+If `-r/--rev REVISION_OR_RANGE` is supplied, then push those commits to try
+instead of `$(git merge-base HEAD $(git-tracks))..HEAD`. For example, if you are
+working on a feature branch that was branched off of master, and want to push
+everything on that branch to try, use `--rev master..HEAD`.
 
 TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
