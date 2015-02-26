@@ -119,8 +119,7 @@ if __name__ == "__main__":
     # Process.
 
     if lines:
-      # Write them back to the same file (and on Windows, ensure they just
-      # have \r line-endings instead of \r\n)
-      f = open(filename, 'wb')
+      # Write them back to the same file.
+      f = open(filename, 'w')
       f.writelines(lines)
       f.close()
