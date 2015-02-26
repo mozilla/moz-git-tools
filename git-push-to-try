@@ -5,11 +5,6 @@
 set -e
 PATH=$(dirname $0):$PATH
 
-function hg_cmd() {
-  #echo "hg "$@"" >&2
-  hg -R "$hg_repo" -q $@ > /dev/null
-}
-
 # Sigh, command-line parsing in bash is so much fun.
 
 while true; do
@@ -48,4 +43,4 @@ hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
 echo
 echo "https://treeherder.mozilla.org/#/jobs?repo=try&revision=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
 
-hg_cmd qpop -a
+hg -R "$hg_repo" -q qpop -a > /dev/null
