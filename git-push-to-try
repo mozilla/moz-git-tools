@@ -41,7 +41,7 @@ fi
 
 git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 
-hg_cmd qnew try -l <(echo "try: $@")
+hg -R "$hg_repo" -q qnew try -m "try: $*" > /dev/null
 echo "try: $@"
 
 hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
