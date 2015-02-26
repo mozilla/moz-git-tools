@@ -41,12 +41,8 @@ fi
 
 git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 
-# avoid using process substitution (ie, "-l <(echo ...)) because Windows.
-# Use a temp file instead.
-commit_msg_filename=$TMP/git-temp-$RANDOM-$$
-echo "try: $@" > $commit_msg_filename
-hg_cmd qnew try -l $commit_msg_filename
-rm $commit_msg_filename
+hg_cmd qnew try -l <(echo "try: $@")
+echo "try: $@"
 
 hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
 echo
