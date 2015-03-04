@@ -16,31 +16,10 @@
 # Based on http://serverfault.com/a/352236/38694
 
 if [[ "$1" == "-d" || "$1" == "--default" ]]; then
-  use_default=1
+  branch=HEAD
 else
-  use_default=0
+  branch=$1
 fi
 
-shift
-
-if [[ "$1" == "" ]]; then
-  branch=$(git rev-parse --symbolic-full-name HEAD) || exit $?
-  branch=${branch##refs/heads/}
-else
-  branch="$1"
-  shift
-fi
-
-remote=$(git config "branch.${branch}.remote" || echo '.')
-remoteBranch=$(git config "branch.${branch}.merge" || echo '')
-remoteBranch=${remoteBranch##refs/heads/}
-
-if [[ "$remote" != "." ]]; then
-  echo "${remote:?}/${remoteBranch:?}"
-elif [[ "$remoteBranch" != "" ]]; then
-  echo "${remoteBranch:?}"
-elif [[ "$use_default" == 1 ]] && git rev-parse origin/master &>/dev/null; then
-  echo origin/master
-else
-  echo >&2 "Warning: Could not find a upstream for $branch"
-fi
+branchref=$(git rev-parse --symbolic-full-name $branch) || exit $?
+git for-each-ref --format='%(upstream:short)' $branchref
