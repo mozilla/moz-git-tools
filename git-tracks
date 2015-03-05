@@ -16,11 +16,16 @@
 # Based on http://serverfault.com/a/352236/38694
 
 if [[ "$1" == "-d" || "$1" == "--default" ]]; then
-  branch=HEAD
   use_default=1
+  shift
+else
+  use_default=0
+fi
+
+if [[ "$1" == "" ]]; then
+  branch=HEAD
 else
   branch=$1
-  use_default=0
 fi
 
 branchref=$(git rev-parse --symbolic-full-name $branch) || exit $?
