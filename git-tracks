@@ -16,10 +16,24 @@
 # Based on http://serverfault.com/a/352236/38694
 
 if [[ "$1" == "-d" || "$1" == "--default" ]]; then
+  use_default=1
+  shift
+else
+  use_default=0
+fi
+
+if [[ "$1" == "" ]]; then
   branch=HEAD
 else
   branch=$1
 fi
 
 branchref=$(git rev-parse --symbolic-full-name $branch) || exit $?
-git for-each-ref --format='%(upstream:short)' $branchref
+remote=$(git for-each-ref --format='%(upstream:short)' $branchref)
+if [[ $remote != "" ]]; then
+  echo $remote
+elif [[ "$use_default" == 1 ]] && git rev-parse origin/master &>/dev/null; then
+  echo origin/master
+else
+  echo >&2 "Warning: Could not find a upstream for $branch"
+fi
