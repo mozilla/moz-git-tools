@@ -10,9 +10,19 @@ set -e
 #
 # Otherwise, we push the commit(s) given.
 
-PATH="$(dirname $0):$PATH"
+this="$0"
+if [[ $OSTYPE == "msys" ]]; then
+  # mozbuild uses msys (which uses "/c/somedir" paths), but git seems to be
+  # based on cygwin (which uses "c:/somedir") - but markh *actually* sees
+  # "c:/somedir\filename" - which upsets most $0 usage.
+  # So fix it up and store the result in $this
+  this="/${this/:/}" # change "c:" to "/c/"
+  this="${this/\\//}" # change "\" to "/"
+fi
 
-$(dirname $0)/private/check-for-updates
+PATH="$(dirname $this):$PATH"
+
+$(dirname $this)/private/check-for-updates
 
 # Read git version and note if it's less than 1.7.6, because older versions do
 # not support git-format-patch --quiet properly.
@@ -39,7 +49,7 @@ fi
 
 hg_repo="$1"
 if [[ "$1" == "" ]]; then
-  echo "Usage: $(basename $0) [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
+  echo "Usage: $(basename $this) [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
   exit 255
 fi
 
