@@ -23,7 +23,10 @@ if [[ "$hg_repo" == "" ]]; then
   exit 255
 fi
 
+PREVIOUS_QUEUE=$(hg_cmd qqueue --active)
+
 git push-to-hg $@
 
 hg_cmd --config "extensions.trychooser=$TRYCHOOSER" trychooser
 hg_cmd -q qpop -a > /dev/null
+hg_cmd qqueue "$PREVIOUS_QUEUE"
