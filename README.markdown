@@ -80,6 +80,11 @@ Usage: `git push-to-trychooser [-t/--tip] PATH_TO_HG_REPO [GIT_REVS]`
 The same as `git push-to-hg`, but also runs the interactive trychooser command
 before pushing the commits to try from the given hg repository.
 
+To use this, you must install the `trychooser` Mercurial extension from
+[its repository](https://bitbucket.org/sfink/trychooser). (There are some
+out-of-date versions of this extension floating around, so be sure to use this
+repository.)
+
 ## git-qparent
 
 Outputs the last common revision of the current branch and upstream.

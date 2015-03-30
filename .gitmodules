@@ -1,6 +1,3 @@
 [submodule "git-bz-moz"]
 	path = git-bz-moz
 	url = https://github.com/mozilla/git-bz-moz.git
-[submodule "trychooser"]
-	path = trychooser
-	url = https://github.com/pbiggar/trychooser
