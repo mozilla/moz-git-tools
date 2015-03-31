@@ -73,9 +73,10 @@ def process(git_patch_file):
     return
 
   parsed_from = email.utils.parseaddr(from_hdr)
-  nuke_prefix = "[PATCH] "
-  if commit_title.startswith(nuke_prefix):
-    commit_title = commit_title[len(nuke_prefix):]
+  nuke_prefix = r"\[PATCH( \d+/\d+)?\] "
+  match = re.match(nuke_prefix, commit_title)
+  if match:
+    commit_title = commit_title[match.end():]
 
   patch_body = msg.get_payload()
 
