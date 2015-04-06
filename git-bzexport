@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+# Uses push-to-hg to push revision(s) to the specified hg repository, and
+# then runs the hg "bzexport" command for uploading patches to Bugzilla.
+
+THIS_DIR=$(cd `dirname "$0"`; pwd)
+PATH="$THIS_DIR:$PATH"
+
+hg_cmd() {
+  # Don't suppress HG output since trychooser uses prompts
+  hg -R "$hg_repo" $@
+}
+
+hg_repo="$1"
+if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+  hg_repo="$2"
+fi
+
+if [[ "$hg_repo" == "" ]]; then
+  echo "Usage: $(basename "$0") [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
+  exit 255
+fi
+
+PREVIOUS_QUEUE=$(hg_cmd qqueue --active)
+
+git push-to-hg $@
+
+hg_cmd bzexport -e
+hg_cmd -q qpop -a > /dev/null
+hg_cmd qqueue $PREVIOUS_QUEUE

@@ -26,6 +26,20 @@ commit before pushing to bugzilla.
 don't use it for anything else, so I'm not sure which of the other features
 work with bugzilla.mozilla.org.)
 
+## git-bzexport
+
+Usage: `git bzexport [-t/--tip] PATH_TO_HG_REPO [GIT_REVS]`
+
+Push commits from git to bugzilla using the `bzexport` Mercurial extension from
+the [Mozilla version control tools repo](https://hg.mozilla.org/hgcustom/version-control-tools).
+
+The `bzexport` extension has some advantages over `bz attach` - for example, if
+multiple Bugzilla reviewers match the reviewer name you specify, `bzexport` will
+let you choose between them using a menu - so some users may prefer it.
+
+This command is implemented using `git-push-to-hg`, so see that command's
+documentation for more details on the argument syntax.
+
 ## git-new-workdir
 
 Create a new working directory based off an existing local git repository.
