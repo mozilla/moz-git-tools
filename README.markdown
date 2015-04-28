@@ -72,6 +72,12 @@ If `-t` or `--tip` is specified, pull and update the hg repository to latest
 tip before pushing.  Otherwise, update the hg repository to the revision atop
 which the git commits are based.
 
+Normally, `git-push-to-hg` pushes your commits to a patch queue called
+`git-temp`. If that patch queue already exists, it is destroyed and recreated.
+If `--append` is specified, however, any existing `git-temp` patch queue will be
+reused. This allows you to easily push commits from multiple git branches to the
+same patch queue, or to push commits one at a time instead of all at once.
+
 ## git-push-to-try
 
 Usage: `git push-to-try [-r/--rev REVISION_OR_RANGE] [-t/--tip] PATH_TO_HG_REPO TRYCHOOSER_PARAMS`

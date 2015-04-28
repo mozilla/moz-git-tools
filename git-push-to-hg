@@ -42,14 +42,23 @@ else
 fi
 
 push_to_tip=0
-if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
-  push_to_tip=1
-  shift
-fi
+append=0
+
+while true; do
+  if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+    push_to_tip=1
+    shift
+  elif [[ "$1" == "-a" || "$1" == "--append" ]]; then
+    append=1
+    shift
+  else
+    break
+  fi
+done
 
 hg_repo="$1"
 if [[ "$1" == "" ]]; then
-  echo "Usage: $(basename $this) [-t/--tip] path-to-hg-repo [git-revs]" 1>& 2
+  echo "Usage: $(basename $this) [-t/--tip] [-a/--append] path-to-hg-repo [git-revs]" 1>& 2
   exit 255
 fi
 
@@ -121,11 +130,20 @@ if [[ $(hg -R "$hg_repo" qapplied) != "" ]]; then
   hg_cmd qpop -a
 fi
 
-# Switch to the patches queue (which we assume exists) so we can delete
-# git-temp.
-hg_cmd qqueue patches
-hg_cmd qqueue -q --purge git-temp || true
-hg_cmd qqueue -q --create git-temp
+if [[ "$append" == 0 ]]; then
+  # Switch to the patches queue (which we assume exists) so we can delete
+  # git-temp.
+  hg_cmd qqueue patches
+  hg_cmd qqueue -q --purge git-temp || true
+  hg_cmd qqueue -q --create git-temp
+else
+  # We're appending, so switch to the git-temp queue.
+  hg_cmd qqueue -q git-temp
+  if [[ $(hg -R "$hg_repo" qqueue --active) != "git-temp" ]]; then
+    echo "No 'git-temp' patch queue found. Push without --append first."
+    exit 3
+  fi
+fi
 
 # If we passed --tip, do hg pull && hg up.  (This isn't the same as hg pull -u:
 # if there's nothing to pull, hg pull -u will skip the update!)
@@ -134,14 +152,39 @@ if [[ "$push_to_tip" != 0 ]]; then
   hg_cmd up --check
 fi
 
+# If we're appending, qpush all existing patches.
+if [[ "$append" != 0 ]]; then
+  hg_cmd qpush -a
+fi
+
 # Pass --quiet only for not-old-git.
 if [[ "$old_git" == 0 ]]; then
   git_format_quiet='--quiet'
 fi
 
-git format-patch $git_format_quiet -M -C -U8 -pk $revs -o ""$hg_repo"/.hg/patches-git-temp"
+# Generate git patches in a temporary directory.
+tmpdir=$(mktemp -d /tmp/git-push-to-hg.XXXXXXXX)
+if [[ "$tmpdir" == "" ]]; then
+  echo "Failed to create temporary directory."
+  exit 4
+fi
 
-pushd ""$hg_repo"/.hg/patches-git-temp" > /dev/null
+git format-patch $git_format_quiet -M -C -U8 -pk $revs -o "$tmpdir"
+
+function exit_on_import_failure() {
+  # Print the output of qimport, passed as our argument.
+  echo "$1"
+  echo
+
+  echo "Import failed; the remaining patches have not been pushed to hg."
+  echo "After fixing the problem, you can use '$(basename $this) --append'"
+  echo "to continue adding patches to the queue."
+  rm -rf $tmpdir
+  exit 5
+}
+
+# Convert the git patches to hg patches.
+pushd "$tmpdir" > /dev/null
   find . -name '*.patch' | sort -g > series
 
   # There might not be any patches here, in which case git-patch-to-hg-patch
@@ -149,6 +192,12 @@ pushd ""$hg_repo"/.hg/patches-git-temp" > /dev/null
   if [[ "$(cat series)" != "" ]]; then
     git-patch-to-hg-patch $(cat series)
   fi
+
+  # Import the hg patches into the git-temp patch queue.
+  for patch in $(cat series); do
+    qimport_output="$(hg_cmd qimport -P $patch 2>&1)" || exit_on_import_failure "$qimport_output"
+  done
 popd > /dev/null
 
-hg_cmd qpush -a
+# Remove the temporary directory.
+rm -rf $tmpdir
