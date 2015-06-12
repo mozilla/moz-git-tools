@@ -39,7 +39,7 @@ git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 hg -R "$hg_repo" -q qnew try -m "try: $*" > /dev/null
 echo "try: $@"
 
-hg -R "$hg_repo" push -f ssh://hg.mozilla.org/try
+hg -R "$hg_repo" push -f -r tip ssh://hg.mozilla.org/try
 echo
 echo "https://treeherder.mozilla.org/#/jobs?repo=try&revision=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
 
