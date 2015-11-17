@@ -16,7 +16,10 @@ if [[ $OSTYPE == "msys" ]]; then
   # based on cygwin (which uses "c:/somedir") - but markh *actually* sees
   # "c:/somedir\filename" - which upsets most $0 usage.
   # So fix it up and store the result in $this
-  this="/${this/:/}" # change "c:" to "/c/"
+  # git-for-windows 2+ uses the same convension as msys(1) in mozilla-build: /c/
+  if [[ ${this:1:1} == ":" ]]; then
+    this="/${this/:/}" # change e.g. "c:" to "/c"
+  fi
   this="${this/\\//}" # change "\" to "/"
 fi
 
