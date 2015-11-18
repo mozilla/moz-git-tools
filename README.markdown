@@ -4,6 +4,11 @@ In order to set this up, clone this repository somewhere,
 run the `git submodule init` and then `git submodule update`
 command, and add your clone to $PATH.
 
+Some commands require `python2`. If using mozilla-build on windows, `python2`
+might be missing, but `python` exists and is actually python 2 (check by running
+`python -V`). On such case, you can create a copy of `python.exe` as `python2.exe`
+at the same location - probably at `<mozilla-build>/python/`.
+
 Many of these tools rely on a notion of your current branch's "upstream
 branch".  For example, `git push-to-try` pushes to try all patches in your
 current branch that aren't upstream.  See the `git-tracks` section below for
