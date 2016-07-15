@@ -6,9 +6,11 @@
 # This file is covered under GPLv2 (and /not/ later versions).  See
 # http://git.kernel.org/cgit/git/git.git/plain/COPYING
 
+# Modified by rwhogg on July 15, 2016
+
 usage () {
 	echo "usage:" $@
-	exit 127
+	exit 0
 }
 
 die () {
