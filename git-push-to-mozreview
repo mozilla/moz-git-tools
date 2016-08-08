@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Usage: git-push-to-mozreview [-t|--tip] [-r REVS|--rev REVS] HG_REPO
+
+set -e
+PATH=$(dirname $0):$PATH
+
+# Sigh, command-line parsing in bash is so much fun.
+
+while true; do
+  if [[ "$1" == "-t" || "$1" == "--tip" ]]; then
+    tip_cmd="--tip"
+    shift
+    continue
+  fi
+
+  if [[ "$1" == "-r" || "$1" == "--rev" ]]; then
+    revs="$2"
+    shift
+    shift
+    continue
+  fi
+
+  break
+done
+
+hg_repo=$1
+if [[ -n "$hg_repo" ]]; then
+    shift
+fi
+
+if [[ -z "$hg_repo" ]]; then
+    echo "usage: $(basename "$0") [-t|--tip] [-r REVS|--rev REVS] HG_REPO"
+    exit 255
+fi
+
+git-push-to-hg $tip_cmd "$hg_repo" "$revs"
+
+hg -R "$hg_repo" push -f -r tip ssh://reviewboard-hg.mozilla.org/autoreview
+echo
+echo "https://treeherder.mozilla.org/#/jobs?repo=try&revision=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
+
+hg -R "$hg_repo" -q qpop -a > /dev/null

@@ -92,6 +92,19 @@ everything on that branch to try, use `--rev master..HEAD`.
 
 TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
+## git-push-to-mozreview
+
+Usage: `git push-to-review [-r/--rev REVISION_OR_RANGE] [-t/--tip] PATH_TO_HG_REPO`
+
+Push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e. everything
+in the current branch that's not upstream) to mozreview, by way of the given hg
+repository.
+
+If `-r/--rev REVISION_OR_RANGE` is supplied, then push those commits to mozreview
+instead of `$(git merge-base HEAD $(git-tracks))..HEAD`. For example, if you are
+working on a feature branch that was branched off of master, and want to push
+everything on that branch to try, use `--rev master..HEAD`.
+
 ## git-push-to-trychooser
 
 Usage: `git push-to-trychooser [-t/--tip] PATH_TO_HG_REPO [GIT_REVS]`
