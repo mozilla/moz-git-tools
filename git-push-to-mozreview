@@ -37,7 +37,5 @@ fi
 git-push-to-hg $tip_cmd "$hg_repo" "$revs"
 
 hg -R "$hg_repo" push -f -r tip ssh://reviewboard-hg.mozilla.org/autoreview
-echo
-echo "https://treeherder.mozilla.org/#/jobs?repo=try&revision=$(hg -R "$hg_repo" log -l1 --template "{node|short}")"
 
 hg -R "$hg_repo" -q qpop -a > /dev/null
