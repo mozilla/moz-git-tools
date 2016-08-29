@@ -96,6 +96,10 @@ TRYCHOOSER\_PARAMS should be, e.g. `-b do -p all -u all -t none`.
 
 Usage: `git push-to-review [-r/--rev REVISION_OR_RANGE] [-t/--tip] PATH_TO_HG_REPO`
 
+**PLEASE NOTE** [git-cinnabar combined with
+git-mozreview](https://mozilla-version-control-tools.readthedocs.io/en/latest/mozreview/install-git.html)
+is the better-supported way to push to mozreview using git!
+
 Push the commits `$(git merge-base HEAD $(git-tracks))..HEAD` (i.e. everything
 in the current branch that's not upstream) to mozreview, by way of the given hg
 repository.
