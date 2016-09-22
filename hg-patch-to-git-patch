@@ -24,7 +24,10 @@ def hg_patch_to_git_patch(hg_patch_file):
     date = None # not currently used
     for i in range(len(hg_patch)):
         line = hg_patch[i]
-        if not line.startswith('#'):
+        if not line.startswith('#') and i > 0:
+            # When we download the patch from hg.mozill.org, there
+            # would be a leading empty line, which needs to be skipped
+            # while converting the patch header.
             break
 
         if line.startswith('# User '):
