@@ -20,9 +20,15 @@ from cStringIO import StringIO
 def hg_patch_to_git_patch(hg_patch_file):
     hg_patch = hg_patch_file.read().split('\n')
 
+    # First, skip any blank lines.
+    for i in range(len(hg_patch)):
+        line = hg_patch[i]
+        if line != "":
+            break
+
     author = None
     date = None # not currently used
-    for i in range(len(hg_patch)):
+    for i in range(i, len(hg_patch)):
         line = hg_patch[i]
         if not line.startswith('#'):
             break
