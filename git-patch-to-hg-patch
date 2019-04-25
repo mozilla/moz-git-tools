@@ -4,14 +4,17 @@ r"""Git format-patch to hg importable patch.
 
 (Who knew this was so complicated?)
 
->>> process(StringIO('From 3ce1ccc06 Mon Sep 17 00:00:00 2001\nFrom: fromuser\nSubject: subject\n\nRest of patch.\nMore patch.\n'))
-'# HG changeset patch\n# User fromuser\n\nsubject\n\nRest of patch.\nMore patch.\n'
+>>> process(StringIO('From 3ce1ccc06 Mon Sep 17 00:00:00 2001\nFrom: fromuser <fromemail>\nSubject: subject\n\nRest of patch.\nMore patch.\n'))
+'# HG changeset patch\n# User fromuser <fromemail>\n\nsubject\n\nRest of patch.\nMore patch.\n'
 
->>> process(StringIO('From: fromuser\nSubject: A very long subject line.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus, arcu sit amet\n\nRest of patch.\nMore patch.\n'))
-'# HG changeset patch\n# User fromuser\n\nA very long subject line.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus, arcu sit amet\n\nRest of patch.\nMore patch.\n'
+>>> process(StringIO('From 3ce1ccc06 Mon Sep 17 00:00:00 2001\nFrom: "A. J. Quoted" <fromemail>\nSubject: subject\n\nRest of patch.\nMore patch.\n'))
+'# HG changeset patch\n# User A. J. Quoted <fromemail>\n\nsubject\n\nRest of patch.\nMore patch.\n'
 
->>> process(StringIO('From: f\nSubject: =?UTF-8?q?Bug=20655877=20-=20Dont=20treat=20SVG=20text=20frames=20?= =?UTF-8?q?as=20being=20positioned.=20r=3D=3F?=\n\nPatch.'))
-'# HG changeset patch\n# User f\n\nBug 655877 - Dont treat SVG text frames as being positioned. r=?\n\nPatch.'
+>>> process(StringIO('From: fromuser <fromemail>\nSubject: A very long subject line.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus, arcu sit amet\n\nRest of patch.\nMore patch.\n'))
+'# HG changeset patch\n# User fromuser <fromemail>\n\nA very long subject line.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi faucibus, arcu sit amet\n\nRest of patch.\nMore patch.\n'
+
+>>> process(StringIO('From: f <f>\nSubject: =?UTF-8?q?Bug=20655877=20-=20Dont=20treat=20SVG=20text=20frames=20?= =?UTF-8?q?as=20being=20positioned.=20r=3D=3F?=\n\nPatch.'))
+'# HG changeset patch\n# User f <f>\n\nBug 655877 - Dont treat SVG text frames as being positioned. r=?\n\nPatch.'
 """
 
 # Original author: bholley
