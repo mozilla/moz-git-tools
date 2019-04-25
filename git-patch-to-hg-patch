@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 r"""Git format-patch to hg importable patch.
 
@@ -24,7 +24,7 @@ import re
 import fileinput
 import email, email.parser, email.header, email.utils
 import math
-from cStringIO import StringIO
+from io import StringIO
 from itertools import takewhile
 
 def decode_header(hdr_string):
@@ -39,7 +39,7 @@ def decode_header(hdr_string):
     if encoding is None:
       rv.append(part)
     else:
-      rv.append(part.decode(encoding).encode('utf-8'))
+      rv.append(part.decode(encoding))
   return ' '.join(rv)
 
 def clean_header(hdr_string):
