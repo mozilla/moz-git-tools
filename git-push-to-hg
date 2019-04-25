@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-if ! hash python2 2> /dev/null; then
-  echo "'python2' is required but not found. Aborting."
+if ! hash python3 2> /dev/null; then
+  echo "'python3' is required but not found. Aborting."
   if hash python 2> /dev/null; then
     echo "'python' found at '$(which python)'."
     echo "If using mozilla-build, you can copy it to 'python2.exe' at the same location."
