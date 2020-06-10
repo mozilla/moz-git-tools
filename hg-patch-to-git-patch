@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 r'''Convert an hg-exported patch to a patch suitable for use by git am.
 
@@ -15,7 +15,7 @@ diffdiff
 
 from __future__ import print_function
 import sys
-from cStringIO import StringIO
+from io import StringIO
 
 def hg_patch_to_git_patch(hg_patch_file):
     hg_patch = hg_patch_file.read().split('\n')
